@@ -1,3 +1,3 @@
 # PositioningLibrary
 
-A description of this package.
+Obiettivo del progetto: creare una libreria AR di posizionamento basata su marcatori
