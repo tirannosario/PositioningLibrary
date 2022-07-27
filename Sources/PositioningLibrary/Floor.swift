@@ -7,13 +7,17 @@
 
 import Foundation
 
-
-public class Floor {
+public struct Floor {
     public var name: String
     public var number: Int
+    public var markers: [Marker]
     
     public init(_ name: String, _ number: Int) {
         self.name = name
         self.number = number
+    }
+    
+    public mutating func addMarker(_ marker: Marker) {
+        self.markers.append(marker)
     }
 }
