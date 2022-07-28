@@ -8,6 +8,6 @@
 import Foundation
 
 public struct Location {
-    public var coordinates: CGPoint
-    public var heading: CGFloat
+    private var coordinates: CGPoint
+    private var heading: CGFloat
 }

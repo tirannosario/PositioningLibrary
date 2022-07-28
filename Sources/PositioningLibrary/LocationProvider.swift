@@ -8,7 +8,7 @@
 import Foundation
 import ARKit
 
-public class Positioning {
+public class LocationProvider {
     private var building: [Building]
     private var userLocation: Location
     private var arSession: ARSession
