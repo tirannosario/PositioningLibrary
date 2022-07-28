@@ -4,10 +4,12 @@
 //
 //  Created by Rosario Galioto on 27/07/22.
 //
-#if os(iOS)
+
 
 import Foundation
+#if !os(macOS)
 import ARKit
+
 
 public class LocationProvider {
     private var building: [Building]
@@ -16,7 +18,7 @@ public class LocationProvider {
     private var locationObserver: LocationObserver?
     
     init(_ arSession: ARSession) {
-        self.building = [Building]
+        self.building = []
         self.arSession = arSession
     }
     
@@ -29,4 +31,5 @@ public class LocationProvider {
         self.locationObserver = locationObserver
     }
 }
+
 #endif

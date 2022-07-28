@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import CoreGraphics
+
 
 public struct Location {
     private var coordinates: CGPoint

@@ -16,6 +16,7 @@ public struct Floor {
     public init(_ name: String, _ number: Int) {
         self.name = name
         self.number = number
+        self.markers = []
     }
     
     public mutating func addMarker(_ marker: Marker) {

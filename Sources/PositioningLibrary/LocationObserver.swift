@@ -7,6 +7,6 @@
 
 import Foundation
 
-protocol LocationObserver {
+public protocol LocationObserver {
     func onLocationUpdate(_ newLocation: Location)
 }
