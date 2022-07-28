@@ -4,6 +4,7 @@
 //
 //  Created by Rosario Galioto on 27/07/22.
 //
+#if os(iOS)
 
 import Foundation
 
@@ -20,3 +21,5 @@ public struct Building {
         self.floors.append(floor)
     }
 }
+
+#endif

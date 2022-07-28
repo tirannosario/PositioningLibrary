@@ -4,6 +4,7 @@
 //
 //  Created by Rosario Galioto on 27/07/22.
 //
+#if os(iOS)
 
 import Foundation
 
@@ -21,3 +22,5 @@ public struct Floor {
         self.markers.append(marker)
     }
 }
+
+#endif

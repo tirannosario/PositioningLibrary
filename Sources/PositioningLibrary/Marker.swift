@@ -4,6 +4,7 @@
 //
 //  Created by Rosario Galioto on 27/07/22.
 //
+#if os(iOS)
 
 import Foundation
 import UIKit
@@ -15,3 +16,4 @@ public struct Marker {
     private var location: Location
     public var physicalWidth: CGFloat
 }
+#endif
