@@ -27,6 +27,10 @@ public class LocationProvider {
         self.arSession = arSession
     }
     
+    public func addBuilding(_ building: Building) {
+        self.building.append(building)
+    }
+    
     public func addLocationObserver(_ locationObserver: LocationObserver) {
         self.locationObserver = locationObserver
     }
