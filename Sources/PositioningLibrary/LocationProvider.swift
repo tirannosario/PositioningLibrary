@@ -68,7 +68,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     
     //MARK: AR stuff
     
-    func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
+    public func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
        
         // This example assumes only one reference image of interest
         // A for-in loop could work for more targets
@@ -93,7 +93,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         }
     }
     
-    func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
+    public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
         guard let imageAnchor = anchors[0] as? ARImageAnchor else { return }
         // Assuming only one reference image. A for-in loop could work for more targets
 
