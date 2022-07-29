@@ -12,7 +12,7 @@ import ARKit
 import UIKit
 import RealityKit
 
-public class LocationProvider: ARSessionDelegate {
+public class LocationProvider: NSObject, ARSessionDelegate {
     private var building: [Building]
     private var userLocation: Location?
     private var arView: ARView
