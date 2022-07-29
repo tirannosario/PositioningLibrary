@@ -18,12 +18,12 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     private var arView: ARView
     private var locationObserver: LocationObserver?
     
-    init(_ arView: ARView) {
+    public init(_ arView: ARView) {
         self.building = []
         self.arView = arView
     }
     
-    init(_ arView: ARView, _ buildings: [Building]) {
+    public init(_ arView: ARView, _ buildings: [Building]) {
         self.building = buildings
         self.arView = arView
     }
