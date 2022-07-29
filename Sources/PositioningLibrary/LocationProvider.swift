@@ -68,7 +68,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     
     //MARK: AR stuff
     
-    public func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
+    func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
        
         // This example assumes only one reference image of interest
         // A for-in loop could work for more targets
@@ -89,11 +89,11 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             // Add new AnchorEntity and its children to ARView's scene's anchor collection
             self.arView.scene.addAnchor(refImageAnchor)
             // There is now RealityKit content anchored to the target reference image!
-            
+            print("Session didAdd Entered")
         }
     }
     
-    public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
+    func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
         guard let imageAnchor = anchors[0] as? ARImageAnchor else { return }
         // Assuming only one reference image. A for-in loop could work for more targets
 
