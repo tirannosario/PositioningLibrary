@@ -11,9 +11,9 @@ import UIKit
 
 
 public struct Marker {
-    private var id: String
-    private var image: UIImage
-    private var location: Location
+    public var id: String
+    public var image: UIImage
+    public var location: Location
     public var physicalWidth: CGFloat
 }
 #endif

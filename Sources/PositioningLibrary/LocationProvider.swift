@@ -13,23 +13,23 @@ import UIKit
 import RealityKit
 
 public class LocationProvider: NSObject, ARSessionDelegate {
-    private var building: [Building]
+    private var buildings: [Building]
     private var userLocation: Location?
     private var arView: ARView
     private var locationObserver: LocationObserver?
     
     public init(_ arView: ARView) {
-        self.building = []
+        self.buildings = []
         self.arView = arView
     }
     
     public init(_ arView: ARView, _ buildings: [Building]) {
-        self.building = buildings
+        self.buildings = buildings
         self.arView = arView
     }
     
     public func addBuilding(_ building: Building) {
-        self.building.append(building)
+        self.buildings.append(building)
     }
     
     public func addLocationObserver(_ locationObserver: LocationObserver) {
@@ -38,8 +38,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     
     public func start() {
         // There must be a set of reference images in project's assets
-        guard let referenceImages = ARReferenceImage.referenceImages(inGroupNamed: "AR Resources", bundle: nil) else { fatalError("Missing expected asset catalog resources.") }
-        
+//        guard let referenceImages = ARReferenceImage.referenceImages(inGroupNamed: "AR Resources", bundle: nil) else { fatalError("Missing expected asset catalog resources.") }
         // Set ARView delegate so we can define delegate methods in this controller
         self.arView.session.delegate = self
 
@@ -57,13 +56,28 @@ public class LocationProvider: NSObject, ARSessionDelegate {
 
         // Both trackingImages and maximumNumberOfTrackedImages are required
         // This example assumes there is only one reference image named "target"
-        configuration.maximumNumberOfTrackedImages = 1
-        configuration.trackingImages = referenceImages
+        configuration.maximumNumberOfTrackedImages = 100 //TODO a quanto?
+        configuration.trackingImages = loadReferenceMarkers()
         // Note that this config option is different than in world tracking, where it is
         // configuration.detectionImages
         
         // Run an ARView session with the defined configuration object
         self.arView.session.run(configuration)
+    }
+    
+    private func loadReferenceMarkers() -> Set<ARReferenceImage> {
+        var references: Set<ARReferenceImage> = []
+        for building in buildings {
+            for floor in building.floors {
+                for marker in floor.markers {
+                    guard let image = marker.image.cgImage else { continue }
+                    let reference = ARReferenceImage(image, orientation: .up, physicalWidth: marker.physicalWidth)
+                    reference.name = marker.id
+                    references.insert(reference)
+                }
+            }
+        }
+        return references
     }
     
     //MARK: AR stuff
@@ -78,14 +92,14 @@ public class LocationProvider: NSObject, ARSessionDelegate {
 
         // If the added anchor is named "target", do something with it
         if let imageName = imageAnchor.name, imageName  == "target" {
-
+            print("Vedo \(imageAnchor.referenceImage.name!)")
             // An example of something to do: Attach a ball marker to the added reference image.
             // Create an AnchorEntity, create a virtual object, add object to AnchorEntity
             let refImageAnchor = AnchorEntity(anchor: imageAnchor)
             let refImageMarker = generateBallMarker(radius: 0.02, color: .systemPink)
             refImageMarker.position.y = 0.04
             refImageAnchor.addChild(refImageMarker)
-            
+            a
             // Add new AnchorEntity and its children to ARView's scene's anchor collection
             self.arView.scene.addAnchor(refImageAnchor)
             // There is now RealityKit content anchored to the target reference image!

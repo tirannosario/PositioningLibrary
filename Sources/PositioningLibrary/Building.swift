@@ -9,8 +9,8 @@
 import Foundation
 
 public struct Building {
-    private var name: String
-    private var floors: [Floor]
+    public var name: String
+    public var floors: [Floor]
     
     public init (_ name: String) {
         self.name = name

@@ -10,6 +10,6 @@ import CoreGraphics
 
 
 public struct Location {
-    private var coordinates: CGPoint
-    private var heading: CGFloat
+    public var coordinates: CGPoint
+    public var heading: CGFloat
 }
