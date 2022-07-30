@@ -120,7 +120,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                 if imageAnchor.isTracked {
                     print("Tracked: \(markerFound!.id) at Location <\(markerFound!.location)>")
                 } else {
-                    print("The anchor for \(imageName) is not guaranteed to match the movement of its corresponding real-world feature, even if it remains in the visible scene.")
+                    print("The anchor for \(markerFound!.id) is not guaranteed to match the movement of its corresponding real-world feature, even if it remains in the visible scene.")
                 }
             }
             else {
