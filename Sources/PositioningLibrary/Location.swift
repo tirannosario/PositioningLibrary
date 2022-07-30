@@ -9,7 +9,7 @@ import Foundation
 import CoreGraphics
 
 
-public struct Location {
+public struct Location: CustomStringConvertible {
     public var coordinates: CGPoint
     public var heading: CGFloat
     
@@ -17,4 +17,7 @@ public struct Location {
         self.coordinates = coordinates
         self.heading = heading
     }
+    
+    public var description: String { return "Coord=(\(self.coordinates.x),\(self.coordinates.y)) Heading=\(self.heading)" }
+
 }

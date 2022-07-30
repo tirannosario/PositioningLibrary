@@ -37,8 +37,6 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     }
     
     public func start() {
-        // There must be a set of reference images in project's assets
-//        guard let referenceImages = ARReferenceImage.referenceImages(inGroupNamed: "AR Resources", bundle: nil) else { fatalError("Missing expected asset catalog resources.") }
         // Set ARView delegate so we can define delegate methods in this controller
         self.arView.session.delegate = self
 
@@ -80,6 +78,20 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         return references
     }
     
+    private func findMarkByID(_ markerID: String) -> Marker? {
+        for building in buildings {
+            for floor in building.floors {
+                for marker in floor.markers {
+                    if marker.id == markerID {
+                        return marker
+                    }
+                }
+            }
+        }
+        return nil
+    }
+    
+    
     //MARK: AR stuff
     
     public func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
@@ -90,18 +102,9 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         // Ensure the first anchor in the list of added anchors can be downcast to an ARImageAnchor
         guard let imageAnchor = anchors[0] as? ARImageAnchor else { return }
         print("Vedo \(imageAnchor.referenceImage.name!)")
-        // If the added anchor is named "target", do something with it
-        if let imageName = imageAnchor.name, imageName  == "target" {
-            // An example of something to do: Attach a ball marker to the added reference image.
-            // Create an AnchorEntity, create a virtual object, add object to AnchorEntity
-            let refImageAnchor = AnchorEntity(anchor: imageAnchor)
-            let refImageMarker = generateBallMarker(radius: 0.02, color: .systemPink)
-            refImageMarker.position.y = 0.04
-            refImageAnchor.addChild(refImageMarker)
-            // Add new AnchorEntity and its children to ARView's scene's anchor collection
-            self.arView.scene.addAnchor(refImageAnchor)
-            // There is now RealityKit content anchored to the target reference image!
-            print("Session didAdd Entered")
+        if let imgId = imageAnchor.referenceImage.name {
+            let markerFound = findMarkByID(imgId)
+            print("Found: \(markerFound.id) at Location <\(markerFound.location)>")
         }
     }
     
