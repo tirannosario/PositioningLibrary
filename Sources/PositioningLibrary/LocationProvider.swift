@@ -99,7 +99,6 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             let refImageMarker = generateBallMarker(radius: 0.02, color: .systemPink)
             refImageMarker.position.y = 0.04
             refImageAnchor.addChild(refImageMarker)
-            a
             // Add new AnchorEntity and its children to ARView's scene's anchor collection
             self.arView.scene.addAnchor(refImageAnchor)
             // There is now RealityKit content anchored to the target reference image!
