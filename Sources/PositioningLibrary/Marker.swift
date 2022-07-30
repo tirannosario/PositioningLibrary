@@ -15,5 +15,12 @@ public struct Marker {
     public var image: UIImage
     public var location: Location
     public var physicalWidth: CGFloat
+    
+    public init(_ id: String, _ image: UIImage, _ location: Location, _ physicalWidth: CGFloat){
+        self.id = id
+        self.image = image
+        self.location = location
+        self.physicalWidth = physicalWidth
+    }
 }
 #endif

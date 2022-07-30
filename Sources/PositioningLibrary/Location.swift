@@ -12,4 +12,9 @@ import CoreGraphics
 public struct Location {
     public var coordinates: CGPoint
     public var heading: CGFloat
+    
+    public init(_ coordinates: CGPoint, _ heading: CGFloat){
+        self.coordinates = coordinates
+        self.heading = heading
+    }
 }
