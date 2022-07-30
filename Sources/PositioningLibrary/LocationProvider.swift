@@ -104,7 +104,12 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         print("Vedo \(imageAnchor.referenceImage.name!)")
         if let imgId = imageAnchor.referenceImage.name {
             let markerFound = findMarkByID(imgId)
-            print("Found: \(markerFound.id) at Location <\(markerFound.location)>")
+            if markerFound != nil {
+                print("Found: \(markerFound!.id) at Location <\(markerFound!.location)>")
+            }
+            else {
+                print("Nothing found")
+            }
         }
     }
     
