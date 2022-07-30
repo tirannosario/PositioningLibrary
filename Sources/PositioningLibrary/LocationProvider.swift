@@ -89,10 +89,9 @@ public class LocationProvider: NSObject, ARSessionDelegate {
 
         // Ensure the first anchor in the list of added anchors can be downcast to an ARImageAnchor
         guard let imageAnchor = anchors[0] as? ARImageAnchor else { return }
-
+        print("Vedo \(imageAnchor.referenceImage.name!)")
         // If the added anchor is named "target", do something with it
         if let imageName = imageAnchor.name, imageName  == "target" {
-            print("Vedo \(imageAnchor.referenceImage.name!)")
             // An example of something to do: Attach a ball marker to the added reference image.
             // Create an AnchorEntity, create a virtual object, add object to AnchorEntity
             let refImageAnchor = AnchorEntity(anchor: imageAnchor)
