@@ -101,7 +101,6 @@ public class LocationProvider: NSObject, ARSessionDelegate {
 
         // Ensure the first anchor in the list of added anchors can be downcast to an ARImageAnchor
         guard let imageAnchor = anchors[0] as? ARImageAnchor else { return }
-        print("Vedo \(imageAnchor.referenceImage.name!)")
         if let imgId = imageAnchor.referenceImage.name {
             let markerFound = findMarkByID(imgId)
             if markerFound != nil {
@@ -115,17 +114,17 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     
     public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
         guard let imageAnchor = anchors[0] as? ARImageAnchor else { return }
-        // Assuming only one reference image. A for-in loop could work for more targets
-
-        if let imageName = imageAnchor.referenceImage.name, imageName  == "img1" {
-            // If anything needs to be done as the ref image anchor is updated frame-to-frame, do it here
-            
-            // E.g., to check if the reference image is still being tracked:
-            // (https://developer.apple.com/documentation/arkit/artrackable/2928210-istracked)
-            if imageAnchor.isTracked {
-                print("\(imageName) is tracked and has a valid transform")
-            } else {
-                print("The anchor for \(imageName) is not guaranteed to match the movement of its corresponding real-world feature, even if it remains in the visible scene.")
+        if let imgId = imageAnchor.referenceImage.name {
+            let markerFound = findMarkByID(imgId)
+            if markerFound != nil {
+                if imageAnchor.isTracked {
+                    print("Tracked: \(markerFound!.id) at Location <\(markerFound!.location)>")
+                } else {
+                    print("The anchor for \(imageName) is not guaranteed to match the movement of its corresponding real-world feature, even if it remains in the visible scene.")
+                }
+            }
+            else {
+                print("Nothing found")
             }
         }
     }
