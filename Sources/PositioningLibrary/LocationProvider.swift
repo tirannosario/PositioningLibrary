@@ -47,7 +47,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         self.arView.debugOptions = [.showStatistics]
 
         // Disable any unneeded rendering options
-        self.arView.renderOptions = [.disableCameraGrain, .disableHDR, .disableMotionBlur, .disableDepthOfField, .disableFaceOcclusions, .disablePersonOcclusion, .disableGroundingShadows, .disableAREnvironmentLighting]
+        self.arView.renderOptions = [.disableCameraGrain, .disableHDR, .disableMotionBlur, .disableDepthOfField, .disableFaceMesh, .disablePersonOcclusion, .disableGroundingShadows, .disableAREnvironmentLighting]
 
         // Instantiate configuration object
         let configuration = ARImageTrackingConfiguration()
@@ -92,14 +92,10 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     }
     
     
-    //MARK: AR stuff
+    //MARK: AR Delegate Methods
     
     public func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
-       
-        // This example assumes only one reference image of interest
-        // A for-in loop could work for more targets
-
-        // Ensure the first anchor in the list of added anchors can be downcast to an ARImageAnchor
+        //TODO, cosa succede se si inquadrano più marker? Come ci dobbiamo comportare?
         guard let imageAnchor = anchors[0] as? ARImageAnchor else { return }
         if let imgId = imageAnchor.referenceImage.name {
             let markerFound = findMarkByID(imgId)
@@ -113,6 +109,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     }
     
     public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
+        //TODO, cosa succede se si inquadrano più marker? Come ci dobbiamo comportare?
         guard let imageAnchor = anchors[0] as? ARImageAnchor else { return }
         if let imgId = imageAnchor.referenceImage.name {
             let markerFound = findMarkByID(imgId)
