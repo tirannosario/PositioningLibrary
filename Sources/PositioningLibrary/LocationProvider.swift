@@ -36,6 +36,11 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         self.locationObserver = locationObserver
     }
     
+    private func setNewLocation(_ location: Location) {
+        self.userLocation = location
+        self.locationObserver?.onLocationUpdate(location)
+    }
+    
     public func start() {
         // Set ARView delegate so we can define delegate methods in this controller
         self.arView.session.delegate = self
@@ -101,6 +106,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             let markerFound = findMarkByID(imgId)
             if markerFound != nil {
                 print("Found: \(markerFound!.id) at Location <\(markerFound!.location)>")
+                setNewLocation(markerFound!.location)
             }
             else {
                 print("Nothing found")
@@ -116,6 +122,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             if markerFound != nil {
                 if imageAnchor.isTracked {
                     print("Tracked: \(markerFound!.id) at Location <\(markerFound!.location)>")
+                    setNewLocation(markerFound!.location)
                 } else {
                     print("The anchor for \(markerFound!.id) is not guaranteed to match the movement of its corresponding real-world feature, even if it remains in the visible scene.")
                 }
