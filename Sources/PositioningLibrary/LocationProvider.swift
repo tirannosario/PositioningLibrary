@@ -117,7 +117,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         guard let imageAnchor = anchors[0] as? ARImageAnchor else { return }
         // Assuming only one reference image. A for-in loop could work for more targets
 
-        if let imageName = imageAnchor.name, imageName  == "target" {
+        if let imageName = imageAnchor.referenceImage.name, imageName  == "img1" {
             // If anything needs to be done as the ref image anchor is updated frame-to-frame, do it here
             
             // E.g., to check if the reference image is still being tracked:
@@ -128,12 +128,6 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                 print("The anchor for \(imageName) is not guaranteed to match the movement of its corresponding real-world feature, even if it remains in the visible scene.")
             }
         }
-    }
-    
-    // Convenience method to create colored spheres
-    func generateBallMarker(radius: Float, color: UIColor) -> ModelEntity {
-        let ball = ModelEntity(mesh: .generateSphere(radius: radius), materials: [SimpleMaterial(color: color, isMetallic: false)])
-        return ball
     }
 }
 
