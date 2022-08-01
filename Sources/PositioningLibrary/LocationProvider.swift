@@ -59,7 +59,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         self.arView.renderOptions = [.disableCameraGrain, .disableHDR, .disableMotionBlur, .disableDepthOfField, .disableFaceMesh, .disablePersonOcclusion, .disableGroundingShadows, .disableAREnvironmentLighting]
 
         // Instantiate configuration object
-        let configuration = ARWorldTrackingConfiguration()
+        let configuration = ARImageTrackingConfiguration()
 
         // Both trackingImages and maximumNumberOfTrackedImages are required
         // This example assumes there is only one reference image named "target"
@@ -135,10 +135,6 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                 print("Nothing found")
             }
         }
-    }
-    
-    public func session(_ session: ARSession, didUpdate frame: ARFrame) {
-       print("new frame")
     }
 }
 
