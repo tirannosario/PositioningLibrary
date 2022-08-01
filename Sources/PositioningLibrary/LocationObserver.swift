@@ -9,4 +9,6 @@ import Foundation
 
 public protocol LocationObserver {
     func onLocationUpdate(_ newLocation: Location)
+    func onBuildingChanged(_ newBuilding: Building)
+    func onFloorChanged(_ newFloor: Floor)
 }
