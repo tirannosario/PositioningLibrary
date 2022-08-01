@@ -36,6 +36,10 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         self.locationObserver = locationObserver
     }
     
+    private func calculateLocation() {
+        
+    }
+    
     private func setNewLocation(_ location: Location) {
         self.userLocation = location
         self.locationObserver?.onLocationUpdate(location)
@@ -131,6 +135,10 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                 print("Nothing found")
             }
         }
+    }
+    
+    public func session(_ session: ARSession, didUpdate frame: ARFrame) {
+       print("new frame")
     }
 }
 
