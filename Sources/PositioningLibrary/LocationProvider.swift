@@ -41,6 +41,8 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     }
     
     private func setNewLocation(_ location: Location) {
+        let camTransform = self.arView.cameraTransform.matrix
+        print(camTransform)
         self.userLocation = location
         self.locationObserver?.onLocationUpdate(location)
     }
