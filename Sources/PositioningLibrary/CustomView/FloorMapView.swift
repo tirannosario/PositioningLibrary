@@ -9,7 +9,7 @@ import UIKit
 
 class FloorMapView: UIView {
     
-    @IBOutlet var contentView: View!
+    @IBOutlet var contentView: UIView!
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
