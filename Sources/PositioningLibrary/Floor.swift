@@ -1,27 +1,27 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Rosario Galioto on 27/07/22.
 //
-#if os(iOS)
 
 import Foundation
 
-public struct Floor {
+public class Floor {
+    public var id: String
     public var name: String
     public var number: Int
-    public var markers: [Marker]
+    public var building: Building
+    public var maxWidth: Float // punto max a dx
+    public var maxHeight: Float // punto max in alto
     
-    public init(_ name: String, _ number: Int) {
+    public init(id: String, name: String, number: Int, building: Building, maxWidth: Float, maxHeight: Float) {
+        self.id = id
         self.name = name
         self.number = number
-        self.markers = []
-    }
-    
-    public mutating func addMarker(_ marker: Marker) {
-        self.markers.append(marker)
+        self.building = building
+        self.maxWidth = maxWidth
+        self.maxHeight = maxHeight
     }
 }
 
-#endif
