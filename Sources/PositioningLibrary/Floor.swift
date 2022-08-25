@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Floor {
+public class Floor: CustomStringConvertible {
     public var id: String
     public var name: String
     public var number: Int
@@ -23,5 +23,8 @@ public class Floor {
         self.maxWidth = maxWidth
         self.maxHeight = maxHeight
     }
+    
+    public var description: String { return "Floor: id=\(id)  name=\(name)"}
+
 }
 

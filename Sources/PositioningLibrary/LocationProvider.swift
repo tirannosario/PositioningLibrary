@@ -20,24 +20,20 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     private var arView: ARView
     private var locationObserver: LocationObserver?
     private var floorMapView: FloorMapView!
-    
     private var originFixed = false
+    
+    //MARK: Setup
 
-    
-    public init(arView: ARView) {
-        self.markers = []
-        self.arView = arView
-    }
-    
     public init(arView: ARView, markers: [Marker]) {
         self.markers = markers
         self.arView = arView
     }
     
-    public func addMarker(marker: Marker) {
-        self.markers.append(marker)
+    public init(arView: ARView, jsonName: String) {
+        self.markers = LocationProvider.loadFromJSON(forName: jsonName)
+        self.arView = arView
     }
-    
+        
     public func addLocationObserver(locationObserver: LocationObserver) {
         self.locationObserver = locationObserver
     }
@@ -59,14 +55,16 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         let configuration = ARWorldTrackingConfiguration()
 
         // Both trackingImages and maximumNumberOfTrackedImages are required
-        // This example assumes there is only one reference image named "target"
-        configuration.maximumNumberOfTrackedImages = 100 //TODO a quanto?
+        configuration.maximumNumberOfTrackedImages = self.markers.count //TODO a quanto?
         configuration.detectionImages = loadReferenceMarkers()
-        // Note that this config option is different than in world tracking, where it is
-        // configuration.detectionImages
         
         // Run an ARView session with the defined configuration object
         self.arView.session.run(configuration)
+    }
+    
+    private static func loadFromJSON(forName fileName: String) -> [Marker] {
+        let jsonParser = CustomJsonParser(forName: fileName)
+        return jsonParser.getMarkers()
     }
     
     public func showFloorMap(_ cgRect: CGRect) {
@@ -89,6 +87,8 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         }
     }
     
+    //MARK: Utility
+    
     private func loadReferenceMarkers() -> Set<ARReferenceImage> {
         var references: Set<ARReferenceImage> = []
         for marker in markers {
@@ -100,6 +100,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         return references
     }
     
+    // trova il relativo Marker e inoltre avvisa se cambiamo Floor/Building
     private func findMarkByID(markerID: String) -> Marker? {
         for marker in markers {
             if marker.id == markerID {
@@ -110,15 +111,27 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                     self.locationObserver?.onBuildingChanged(self.currentBuilding!)
                     self.currentFloor = floor
                     self.locationObserver?.onFloorChanged(self.currentFloor!)
+                    removeAllAnchors(markerID)
                 }
                 else if(self.currentFloor?.number != floor.number) {
                     self.currentFloor = floor
                     self.locationObserver?.onFloorChanged(self.currentFloor!)
+                    removeAllAnchors(markerID)
                 }
                 return marker
             }
         }
         return nil
+    }
+    
+    //quando cambiamo floor andiamo ad eliminare tutte le ancore precedente, tranne l'ultima aggiunta (quella che è nel nuovo floor)
+    private func removeAllAnchors(_ lastMarkerID: String) {
+        let allAnchors = self.arView.session.currentFrame!.anchors
+        for anchor in allAnchors {
+            if(anchor.name != lastMarkerID) {
+                self.arView.session.remove(anchor: anchor)
+            }
+        }
     }
     
     //MARK: AR Delegate Methods
@@ -139,7 +152,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         }
     }
     
-    // quando continuo a vedere lo stesso Marker, ricalcolo la posizione del device
+    // metodo richiamato quando continuo a vedere lo stesso Marker
 //    public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
 //        //TODO, cosa succede se si inquadrano più marker? Come ci dobbiamo comportare?
 //        guard let imageAnchor = anchors[0] as? ARImageAnchor else { return }
@@ -147,7 +160,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
 //            let markerFound = findMarkByID(markerID: imgId)
 //            if markerFound != nil {
 //                if imageAnchor.isTracked {
-//                    updateLocation(imageAnchor: imageAnchor, location: markerFound!.location)
+//                 print(getSCARotationY(imageAnchor))
 //                } else {
 //                    print("The anchor for \(markerFound!.id) is not guaranteed to match the movement of its corresponding real-world feature, even if it remains in the visible scene.")
 //                }
@@ -161,7 +174,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     // viene richiamata ad ogni frame (anche quando non inquadriamo nessun marker), calcola la posizione dell'utente rispetto all'orgine SCA (la aggiorna con tecn. dead reckoning)
     public func session(_ session: ARSession, didUpdate frame: ARFrame) {
         calculateDevicePose(frame)
-      }
+    }
 
     
     //MARK: Calcolo della Posizione
@@ -169,7 +182,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     private func fixAROrigin(imageAnchor: ARImageAnchor, location: Location) {
         let alpha_a = getSCARotationY(imageAnchor)
         let alpha_m = location.heading
-        let alpha = alpha_a - alpha_m
+        let alpha = -(alpha_a - alpha_m)
 //        print("alpha_a: \(alpha_a)    alpha_m: \(alpha_m)  -> alpha: \(alpha)")
         
         let (x_m, y_m) = (Float(location.coordinates.x), Float(location.coordinates.y))
@@ -181,7 +194,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         
         let x_t = x_m - x_b
         let y_t = y_m - y_b
-        print("x_t:\(x_t)  y_t:\(y_t)")
+//        print("x_t:\(x_t)  y_t:\(y_t)")
         
         // ruoto origine SCA
         let cosa = cos(alpha)
@@ -214,7 +227,10 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     private func getSCARotationY(_ imageAnchor: ARImageAnchor) -> Float{
         let node = SCNNode()
         node.transform = SCNMatrix4(imageAnchor.transform)
-        return (node.rotation.y * node.rotation.w) // in radianti
+//        return (node.rotation.y * node.rotation.w) // in radianti
+//        return atan2(imageAnchor.transform[2][0], imageAnchor.transform[2][2])
+        let q = node.orientation
+        return -atan2f((2*q.y*q.w)-(2*q.x*q.z), 1-(2*pow(q.y,2))-(2*pow(q.z,2)))
     }
     
     private func calculateDevicePose(_ frame: ARFrame) {
@@ -232,3 +248,4 @@ extension Float {
     var degreesToRadians: Self { self * .pi / 180 }
     var radiansToDegrees: Self { self * 180 / .pi }
 }
+
