@@ -11,7 +11,7 @@ La libreria fornisce aggiornamenti di posizione attraverso un'istanza della clas
 - `Marker`: identifica un marker, ha una *Location* che lo localizza in un *Floor*
 - `Location`: identifica una **pose** (posizione e orientamento) rispetto all'origine degli assi del *Floor* di appartenenza
 ---
-## :pushpin: Posizionamento dei Marker
+## :round_pushpin: Posizionamento dei Marker
 I Markers andranno posizionati nel piano da tracciare, e successivamente andranno definite le relative pose. 
 - La **pose** di un Marker è definita da:
     -  **x,y** a partire dall'origine, espresse in metri
@@ -54,7 +54,7 @@ Una classe che aderisce a `LocationObserver` riceve aggiornamenti per quanto rig
         ---
 
     - __Creazione Statica__
-        - L'utente può definire un proprio documento JSON seguendo un determinato schema ([esempio](https://github.com/tirannosario/DemoPositioningLibrary/blob/main/DemoPositioningLibrary/mydata.json) di doc JSON). (Le immagini dovranno essere comunque caricate sugli **Assets** del progetto, il JSON conterrà il riferimento al loro nome). Quindi sarà possibile istanziare un oggetto della classe `LocationProvider` passandogli la **ARView** e il nome del documento JSON. Poi sull'oggetto `LocationProvider` sarà possibile registrare la nostra classe come `LocationObserver` e successivamente richiamare il metodo `start()` per far iniziare il calcolo della posizione. 
+        - L'utente può definire un proprio documento JSON seguendo un determinato schema ([esempio](https://github.com/tirannosario/TestPositioningLibrary/blob/main/TryLibrary/mydata.json) di doc JSON). (Le immagini dovranno essere comunque caricate sugli **Assets** del progetto, il JSON conterrà il riferimento al loro nome). Quindi sarà possibile istanziare un oggetto della classe `LocationProvider` passandogli la **ARView** e il nome del documento JSON. Poi sull'oggetto `LocationProvider` sarà possibile registrare la nostra classe come `LocationObserver` e successivamente richiamare il metodo `start()` per far iniziare il calcolo della posizione. 
 
         - Esempio:
         ```swift
@@ -62,4 +62,6 @@ Una classe che aderisce a `LocationObserver` riceve aggiornamenti per quanto rig
             locationProvider.addLocationObserver(locationObserver: self)
             locationProvider.start()
         ```
-
+---
+ ## :eyes: Demo
+ Alla seguente [repo](https://github.com/tirannosario/TestPositioningLibrary) è presente una semplice app iOS che fa uso della libreria, mostrando a schermo i dati della **pose** dell'utente.
