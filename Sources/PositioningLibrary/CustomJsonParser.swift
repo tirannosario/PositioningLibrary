@@ -1,6 +1,6 @@
 //
 //  CustomJsonParser.swift
-//  DemoPositioningLibrary
+//  PositioningLibrary
 //
 //  Created by Rosario Galioto on 24/08/22.
 //

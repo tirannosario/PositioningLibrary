@@ -1,6 +1,6 @@
 //
 //  ApproxLocation.swift
-//  DemoPositioningLibrary
+//  PositioningLibrary
 //
 //  Created by Rosario Galioto on 12/08/22.
 //
