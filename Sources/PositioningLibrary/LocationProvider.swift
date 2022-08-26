@@ -67,25 +67,25 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         return jsonParser.getMarkers()
     }
     
-    public func showFloorMap(_ cgRect: CGRect) {
-        if(self.floorMapView == nil) {
-            floorMapView = FloorMapView(frame: cgRect)
-            arView.addSubview(floorMapView)
-        }
-        else {
-            print("An FloorMap already exist")
-        }
-    }
-    
-    public func hideFloorMap() {
-        if(self.floorMapView != nil) {
-            self.floorMapView.removeFromSuperview()
-            self.floorMapView = nil
-        }
-        else {
-            print("Any FloorMap exist")
-        }
-    }
+//    public func showFloorMap(_ cgRect: CGRect) {
+//        if(self.floorMapView == nil) {
+//            floorMapView = FloorMapView(frame: cgRect)
+//            arView.addSubview(floorMapView)
+//        }
+//        else {
+//            print("An FloorMap already exist")
+//        }
+//    }
+//
+//    public func hideFloorMap() {
+//        if(self.floorMapView != nil) {
+//            self.floorMapView.removeFromSuperview()
+//            self.floorMapView = nil
+//        }
+//        else {
+//            print("Any FloorMap exist")
+//        }
+//    }
     
     //MARK: Utility
     
