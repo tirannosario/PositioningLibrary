@@ -39,7 +39,7 @@ public class CustomJsonParser {
                                                        name: b["name"] as! String))
                         }
                     }
-                    else { print("Error: Buildings not found")}
+                    else { throw NotValid.noBuildings }
                     
                     if let floors = dictionary["floors"] as? [Any] {
                         for floor in floors {
@@ -52,12 +52,12 @@ public class CustomJsonParser {
                                                   maxHeight: getFloat(f["maxHeight"]!)))
                         }
                     }
-                    else { print("Error: Floors not found")}
+                    else { throw NotValid.noFloors }
                     
                     if let markers = dictionary["markers"] as? [Any] {
                         for marker in markers {
                             let m = marker as! [String:Any]
-                            let l = m["location"] as! [String:Any]
+                            if let l = m["location"] as? [String:Any] {
                             let location = Location(coordinates: CGPoint(x: l["x"] as! Double, y: l["y"] as! Double),
                                                     heading: getFloat(l["heading"]!),
                                                     floor: getFloor(floorID: l["floor"] as! String))
@@ -65,17 +65,31 @@ public class CustomJsonParser {
                                                     image: UIImage(named: m["image"] as! String)!,
                                                     physicalWidth: m["physicalWidth"] as! CGFloat,
                                                     location: location))
+                            }
+                            else { throw NotValid.noLocation(m["id"] as! String) }
                         }
                     }
-                    else { print("Error: Markers not found")}
+                    else { throw NotValid.noMarkers }
 //                    print("Buildings-> \(myBuilding)")
 //                    print("Floors-> \(myFloors)")
 //                    print("Markers-> \(myMarkers)")
                 }
-            } catch {
-                print("Error!! Unable to parse  \(fileName).json")
+                else { throw NotValid.badStructure }
+                
+            }
+            catch let error {
+                switch error {
+                    case NotValid.badStructure: print("Error: \(fileName).json with bad structure, check doc.")
+                    case NotValid.noBuildings: print("Error: Buildings not found")
+                    case NotValid.noFloors: print("Error: Floors not found")
+                    case NotValid.noMarkers: print("Error: Markers not found")
+                    case NotValid.noLocation(let markerID): print("Error: Missing Location for Marker: \(markerID)")
+                    default:
+                        print("Error: Unable to parse \(fileName).json")
+                }
             }
         }
+        else { print("Error: \(fileName).json not found!")}
     }
     
     private func getBuilding(buildingID: String) -> Building {
@@ -90,5 +104,13 @@ public class CustomJsonParser {
         if let n = object as? NSNumber { return n.floatValue }
         else { return -1 }
     }
+}
+
+enum NotValid: Error {
+    case badStructure
+    case noBuildings
+    case noFloors
+    case noMarkers
+    case noLocation(String)
 }
 

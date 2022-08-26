@@ -7,8 +7,6 @@
 
 import Foundation
 import CoreGraphics
-import PositioningLibrary
-
 
 public class Location: CustomStringConvertible {
     public var coordinates: CGPoint
