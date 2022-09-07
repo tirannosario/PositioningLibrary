@@ -1,6 +1,5 @@
 //
 //  CustomJsonParser.swift
-//  PositioningLibrary
 //
 //  Created by Rosario Galioto on 24/08/22.
 //
@@ -8,6 +7,7 @@
 import Foundation
 import CoreGraphics
 import UIKit
+import MapKit
 
 
 public class CustomJsonParser {
@@ -36,7 +36,7 @@ public class CustomJsonParser {
                         for building in buildings {
                             let b = building as! [String:Any]
                             myBuilding.append(Building(id: b["id"] as! String,
-                                                       name: b["name"] as! String))
+                                                       name: b["name"] as! String, coord: CLLocationCoordinate2D(latitude: b["latitude"] as! Double, longitude: b["longitude"] as! Double)))
                         }
                     }
                     else { throw NotValid.noBuildings }
@@ -113,4 +113,3 @@ enum NotValid: Error {
     case noMarkers
     case noLocation(String)
 }
-

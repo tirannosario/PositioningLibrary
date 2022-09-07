@@ -12,14 +12,34 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="FloorMapView" customModule="PositioningLibrary">
             <connections>
                 <outlet property="contentView" destination="iN0-l3-epB" id="qhq-83-Iel"/>
+                <outlet property="mapView" destination="kLt-cm-Oju" id="h5O-SP-hal"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="iN0-l3-epB">
             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Map Loaded" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fAF-Rn-rbV">
+                    <rect key="frame" x="131.5" y="435" width="151.5" height="26.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                    <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="kLt-cm-Oju">
+                    <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                </mapView>
+            </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="fAF-Rn-rbV" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="0Hs-Hg-rsp"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="kLt-cm-Oju" secondAttribute="trailing" id="9VV-CY-of5"/>
+                <constraint firstItem="fAF-Rn-rbV" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="F9E-Qq-oXR"/>
+                <constraint firstItem="kLt-cm-Oju" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="HJB-Ik-OHH"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="kLt-cm-Oju" secondAttribute="bottom" id="Rha-Z0-b5q"/>
+                <constraint firstItem="kLt-cm-Oju" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="oVL-x2-uK3"/>
+            </constraints>
             <point key="canvasLocation" x="132" y="123"/>
         </view>
     </objects>

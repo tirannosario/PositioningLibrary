@@ -18,7 +18,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     private var currentBuilding: Building?
     private var currentFloor: Floor?
     private var arView: ARView
-    private var locationObserver: LocationObserver?
+    private var locationObservers: [LocationObserver] // lista di LocationObserver che andremo a notificare con gli aggiornamenti
     private var floorMapView: FloorMapView!
     private var originFixed = false
     
@@ -27,18 +27,24 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     public init(arView: ARView, markers: [Marker]) {
         self.markers = markers
         self.arView = arView
+        self.locationObservers = []
     }
     
     public init(arView: ARView, jsonName: String) {
         self.markers = LocationProvider.loadFromJSON(forName: jsonName)
         self.arView = arView
+        self.locationObservers = []
     }
         
     public func addLocationObserver(locationObserver: LocationObserver) {
-        self.locationObserver = locationObserver
+        self.locationObservers.append(locationObserver)
+    }
+    
+    public func removeLocationObserver(locationObserver: LocationObserver) {
+        self.locationObservers = self.locationObservers.filter{$0 !== locationObserver}
     }
             
-    public func start() {
+    public func start(debug: Bool = false) {
         // Set ARView delegate so we can define delegate methods in this controller
         self.arView.session.delegate = self
 
@@ -46,7 +52,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         self.arView.automaticallyConfigureSession = false
 
         // Show statistics if desired
-        self.arView.debugOptions = [.showWorldOrigin, .showAnchorOrigins]
+        if(debug) { self.arView.debugOptions = [.showWorldOrigin, .showAnchorOrigins] }
 
         // Disable any unneeded rendering options
         self.arView.renderOptions = [.disableCameraGrain, .disableHDR, .disableMotionBlur, .disableDepthOfField, .disableFaceMesh, .disablePersonOcclusion, .disableGroundingShadows, .disableAREnvironmentLighting]
@@ -67,25 +73,34 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         return jsonParser.getMarkers()
     }
     
-//    public func showFloorMap(_ cgRect: CGRect) {
-//        if(self.floorMapView == nil) {
-//            floorMapView = FloorMapView(frame: cgRect)
-//            arView.addSubview(floorMapView)
-//        }
-//        else {
-//            print("An FloorMap already exist")
-//        }
-//    }
-//
-//    public func hideFloorMap() {
-//        if(self.floorMapView != nil) {
-//            self.floorMapView.removeFromSuperview()
-//            self.floorMapView = nil
-//        }
-//        else {
-//            print("Any FloorMap exist")
-//        }
-//    }
+    public func showFloorMap(_ cgRect: CGRect) {
+        if(self.floorMapView == nil) {
+            floorMapView = FloorMapView(frame: cgRect)
+            arView.addSubview(floorMapView)
+            addLocationObserver(locationObserver: floorMapView)
+        }
+        else {
+            print("An FloorMap already exist")
+        }
+    }
+    
+    public func hideFloorMap() {
+        if(self.floorMapView != nil) {
+            self.floorMapView.removeFromSuperview()
+            self.floorMapView = nil
+        }
+        else {
+            print("Any FloorMap exist")
+        }
+    }
+    
+    public func startFollowUser() {
+        self.floorMapView?.startFollowUser()
+    }
+    
+    public func stopFollowUser() {
+        self.floorMapView?.stopFollowUser()
+    }
     
     //MARK: Utility
     
@@ -108,14 +123,14 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                 let building = floor.building
                 if(self.currentBuilding == nil || self.currentBuilding?.id != building.id) { // se currentBuilding = nil anche currentFloor lo è, poichè non abbiamo ancora visitato nessun Building
                     self.currentBuilding = building
-                    self.locationObserver?.onBuildingChanged(self.currentBuilding!)
+                    notifyBuildChanged(newBuilding: self.currentBuilding!)
                     self.currentFloor = floor
-                    self.locationObserver?.onFloorChanged(self.currentFloor!)
+                    notifyFloorChanged(newFloor: self.currentFloor!)
                     removeAllAnchors(markerID)
                 }
                 else if(self.currentFloor?.number != floor.number) {
                     self.currentFloor = floor
-                    self.locationObserver?.onFloorChanged(self.currentFloor!)
+                    notifyFloorChanged(newFloor: self.currentFloor!)
                     removeAllAnchors(markerID)
                 }
                 return marker
@@ -131,6 +146,24 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             if(anchor.name != lastMarkerID) {
                 self.arView.session.remove(anchor: anchor)
             }
+        }
+    }
+    
+    private func notifyBuildChanged(newBuilding: Building) {
+        for locationObserver in self.locationObservers {
+            locationObserver.onBuildingChanged(newBuilding)
+        }
+    }
+    
+    private func notifyFloorChanged(newFloor: Floor) {
+        for locationObserver in self.locationObservers {
+            locationObserver.onFloorChanged(newFloor)
+        }
+    }
+    
+    private func notifyLocationUpdate(newLocation: ApproxLocation) {
+        for locationObserver in self.locationObservers {
+            locationObserver.onLocationUpdate(newLocation)
         }
     }
     
@@ -239,7 +272,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             let devicePosition = simd_float3(x: transform.x, y: transform.y, z: transform.z)
             let deviceOrientation = frame.camera.eulerAngles.y
             let newPosition = ApproxLocation(coordinates: CGPoint(x: CGFloat(devicePosition.x), y: CGFloat(devicePosition.z)), heading: deviceOrientation, floor: self.currentFloor!, approxRadius: 0, approxAngle: 0)
-            self.locationObserver?.onLocationUpdate(newPosition)
+            notifyLocationUpdate(newLocation: newPosition)
         }
     }
 }
@@ -248,4 +281,3 @@ extension Float {
     var degreesToRadians: Self { self * .pi / 180 }
     var radiansToDegrees: Self { self * 180 / .pi }
 }
-
