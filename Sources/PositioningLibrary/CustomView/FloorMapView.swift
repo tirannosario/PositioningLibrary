@@ -40,7 +40,7 @@ class FloorMapView: UIView {
     }
 
     func initSubviews() {
-        let nib = UINib(nibName: "FloorMapView", bundle: .main)
+        let nib = UINib(nibName: "FloorMapView", bundle: Bundle.module)
         nib.instantiate(withOwner: self, options: nil)
         contentView.frame = bounds
         addSubview(contentView)
