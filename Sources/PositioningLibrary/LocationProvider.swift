@@ -61,7 +61,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         let configuration = ARWorldTrackingConfiguration()
 
         // Both trackingImages and maximumNumberOfTrackedImages are required
-        configuration.maximumNumberOfTrackedImages = self.markers.count //TODO a quanto?
+        configuration.maximumNumberOfTrackedImages = self.markers.count // TODO: upload only markers of the near building (using gps signal)
         configuration.detectionImages = loadReferenceMarkers()
         
         // Run an ARView session with the defined configuration object
