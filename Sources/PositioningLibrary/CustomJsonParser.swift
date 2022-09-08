@@ -49,7 +49,8 @@ public class CustomJsonParser {
                                                   number: f["number"] as! Int,
                                                   building: getBuilding(buildingID: f["building"] as! String),
                                                   maxWidth: getFloat(f["maxWidth"]!),
-                                                  maxHeight: getFloat(f["maxHeight"]!)))
+                                                  maxHeight: getFloat(f["maxHeight"]!),
+                                                  floorMap: f["floorMap"] != nil ? UIImage(named: f["floorMap"] as! String) : nil))
                         }
                     }
                     else { throw NotValid.noFloors }
