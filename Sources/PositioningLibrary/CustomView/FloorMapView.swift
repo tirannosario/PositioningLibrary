@@ -275,7 +275,7 @@ class MapOverlayRenderer: MKOverlayRenderer {
     }
 }
 
-class UserPositionAnnotation: MKPointAnnotation { var image = UIImage(named:"icon-pos") }
+class UserPositionAnnotation: MKPointAnnotation { var image = UIImage(named: "icon-pos", in: .module, compatibleWith: nil)}
 
 class BuildingAnnotation: MKPointAnnotation { }
 
