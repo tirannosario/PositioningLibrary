@@ -8,7 +8,7 @@
 import UIKit
 import MapKit
 
-class FloorMapView: UIView {
+public class FloorMapView: UIView {
     
     @IBOutlet var contentView: UIView!
     @IBOutlet var mapView: MKMapView!
@@ -163,12 +163,12 @@ class FloorMapView: UIView {
 
 extension FloorMapView: MKMapViewDelegate {
     // per renderizzare overlay
-    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+    public func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         return MapOverlayRenderer(overlay: overlay, image: (overlay as! MapOverlay).image)
     }
     
     // per renderizzare annotation
-    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+    public func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if(annotation is UserPositionAnnotation) {
             let identifier = "UserAnnotation"
             self.userAnnotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
@@ -201,12 +201,12 @@ extension FloorMapView: MKMapViewDelegate {
     }
     
     /// per gestire tocco callout Annotation
-    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+    public func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         revealIndoorMap()
     }
     
     /// per gestire spostamenti di camera/zoom/rotazione
-    func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
+    public func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
         // se facciamo zoom-out, nascondiamo l'Indoor Map e mostriamo un Annotation sul Building
         if(self.mapOverlay != nil && self.whiteOverlay != nil) {
             if(mapView.region.span.latitudeDelta > self.heightCoord!*(whiteMultiplier-1) || mapView.region.span.longitudeDelta > self.widthCoord!*(whiteMultiplier-1)) {
@@ -283,17 +283,17 @@ class BuildingAnnotation: MKPointAnnotation { }
 //MARK: LocationObserver Methods
 
 extension FloorMapView: LocationObserver {
-    func onLocationUpdate(_ newLocation: ApproxLocation) {
+    public func onLocationUpdate(_ newLocation: ApproxLocation) {
         // se abbiamo l'img per quel Floor
         if(self.floorMapExist) {
             moveUserAnnotation(x: Float(newLocation.coordinates.x), y: Float(newLocation.coordinates.y), heading: newLocation.heading, widthFloorInMeters: newLocation.floor.maxWidth, heightFloorInMeters: newLocation.floor.maxHeight)
         }
     }
     
-    func onBuildingChanged(_ newBuilding: Building) {
+    public func onBuildingChanged(_ newBuilding: Building) {
     }
     
-    func onFloorChanged(_ newFloor: Floor) {
+    public func onFloorChanged(_ newFloor: Floor) {
         changeFloorMap(newFloor: newFloor)
     }
 }
