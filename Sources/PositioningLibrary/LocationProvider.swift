@@ -18,61 +18,54 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     private var currentBuilding: Building?
     private var currentFloor: Floor?
     private var arView: ARView
-    private var locationObservers: [LocationObserver] // lista di LocationObserver che andremo a notificare con gli aggiornamenti
+    private var locationObservers: [LocationObserver] // list of Observers who will be notified of the change of position
     private var floorMapView: FloorMapView!
-    private var originFixed = false
+    private var originFixed = false // true if AR Origin==Floor Origin
     
     //MARK: Setup
 
+    /// Initializes the LocationProvider with the ARView and a list of markers
     public init(arView: ARView, markers: [Marker]) {
         self.markers = markers
         self.arView = arView
         self.locationObservers = []
     }
     
+    /// Initializes the LocationProvider with the ARView and a json file
     public init(arView: ARView, jsonName: String) {
         self.markers = LocationProvider.loadFromJSON(forName: jsonName)
         self.arView = arView
         self.locationObservers = []
     }
-        
+    
+    /// Adds the specified LocationObserver to the list of observers who will be notified
     public func addLocationObserver(locationObserver: LocationObserver) {
         self.locationObservers.append(locationObserver)
     }
     
+    /// Removes the specified LocationObserver from the list of observers
     public func removeLocationObserver(locationObserver: LocationObserver) {
         self.locationObservers = self.locationObservers.filter{$0 !== locationObserver}
     }
-            
+     
+    /// Starts the position calculation
+    /// - Parameter debug: Indicates whether or not to show the anchors of the Ar Session
     public func start(debug: Bool = false) {
         // Set ARView delegate so we can define delegate methods in this controller
         self.arView.session.delegate = self
-
-        // Forgo automatic configuration to do it manually instead
         self.arView.automaticallyConfigureSession = false
-
         // Show statistics if desired
         if(debug) { self.arView.debugOptions = [.showWorldOrigin, .showAnchorOrigins] }
-
         // Disable any unneeded rendering options
         self.arView.renderOptions = [.disableCameraGrain, .disableHDR, .disableMotionBlur, .disableDepthOfField, .disableFaceMesh, .disablePersonOcclusion, .disableGroundingShadows, .disableAREnvironmentLighting]
-
-        // Instantiate configuration object
         let configuration = ARWorldTrackingConfiguration()
-
-        // Both trackingImages and maximumNumberOfTrackedImages are required
-        configuration.maximumNumberOfTrackedImages = self.markers.count // TODO: upload only markers of the near building (using gps signal)
+        configuration.maximumNumberOfTrackedImages = self.markers.count // TODO: upload only markers of the near building (using the user gps signal)
         configuration.detectionImages = loadReferenceMarkers()
-        
-        // Run an ARView session with the defined configuration object
         self.arView.session.run(configuration)
     }
     
-    private static func loadFromJSON(forName fileName: String) -> [Marker] {
-        let jsonParser = CustomJsonParser(forName: fileName)
-        return jsonParser.getMarkers()
-    }
-    
+    /// Shows in the cgRect defined, the Map of the current floor (if the map exists)
+    /// - Parameter cgRect: Defines the size and position of the map to show
     public func showFloorMap(_ cgRect: CGRect) {
         if(self.floorMapView == nil) {
             floorMapView = FloorMapView(frame: cgRect)
@@ -84,6 +77,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         }
     }
     
+    /// Hides the Map
     public func hideFloorMap() {
         if(self.floorMapView != nil) {
             self.floorMapView.removeFromSuperview()
@@ -94,15 +88,23 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         }
     }
     
+    /// The map camera starts following the user's position. When this option is on, it's not possible to move the camera
     public func startFollowUser() {
         self.floorMapView?.startFollowUser()
     }
     
+    /// The map camera stops following the user's position.
     public func stopFollowUser() {
         self.floorMapView?.stopFollowUser()
     }
     
+    
     //MARK: Utility
+    
+    private static func loadFromJSON(forName fileName: String) -> [Marker] {
+        let jsonParser = CustomJsonParser(forName: fileName)
+        return jsonParser.getMarkers()
+    }
     
     private func loadReferenceMarkers() -> Set<ARReferenceImage> {
         var references: Set<ARReferenceImage> = []
@@ -115,19 +117,21 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         return references
     }
     
-    // trova il relativo Marker e inoltre avvisa se cambiamo Floor/Building
+    /// Find the Marker with markerID if it exists, otherwise it returns nil. It also notifies if the user changes Floor or Building
     private func findMarkByID(markerID: String) -> Marker? {
         for marker in markers {
             if marker.id == markerID {
                 let floor = marker.location.floor
                 let building = floor.building
-                if(self.currentBuilding == nil || self.currentBuilding?.id != building.id) { // se currentBuilding = nil anche currentFloor lo è, poichè non abbiamo ancora visitato nessun Building
+                // the user visit a new building or a different one
+                if(self.currentBuilding == nil || self.currentBuilding?.id != building.id) {
                     self.currentBuilding = building
                     notifyBuildChanged(newBuilding: self.currentBuilding!)
                     self.currentFloor = floor
                     notifyFloorChanged(newFloor: self.currentFloor!)
                     removeAllAnchors(markerID)
                 }
+                // the user visit a different floor of the same building
                 else if(self.currentFloor?.number != floor.number) {
                     self.currentFloor = floor
                     notifyFloorChanged(newFloor: self.currentFloor!)
@@ -139,7 +143,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         return nil
     }
     
-    //quando cambiamo floor andiamo ad eliminare tutte le ancore precedente, tranne l'ultima aggiunta (quella che è nel nuovo floor)
+    /// Removes all the previous anchors, except the last one (lastMarkerID), that is in the new floor
     private func removeAllAnchors(_ lastMarkerID: String) {
         let allAnchors = self.arView.session.currentFrame!.anchors
         for anchor in allAnchors {
@@ -169,9 +173,9 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     
     //MARK: AR Delegate Methods
     
-    // quando trovo per la prima volta un Marker, faccio il fix dell'origin
+    /// Method called when a Marker is recognized for the first time
     public func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
-        //TODO, cosa succede se si inquadrano più marker? Come ci dobbiamo comportare?
+        // TODO: what happen if two or more Markers are recognized?
         guard let imageAnchor = anchors[0] as? ARImageAnchor else { return }
         if let imgId = imageAnchor.referenceImage.name {
             let markerFound = findMarkByID(markerID: imgId)
@@ -185,15 +189,13 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         }
     }
     
-    // metodo richiamato quando continuo a vedere lo stesso Marker
+    /// Method called when we continue to recognize a marker already seen
 //    public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
-//        //TODO, cosa succede se si inquadrano più marker? Come ci dobbiamo comportare?
 //        guard let imageAnchor = anchors[0] as? ARImageAnchor else { return }
 //        if let imgId = imageAnchor.referenceImage.name {
 //            let markerFound = findMarkByID(markerID: imgId)
 //            if markerFound != nil {
 //                if imageAnchor.isTracked {
-//                 print(getSCARotationY(imageAnchor))
 //                } else {
 //                    print("The anchor for \(markerFound!.id) is not guaranteed to match the movement of its corresponding real-world feature, even if it remains in the visible scene.")
 //                }
@@ -204,32 +206,30 @@ public class LocationProvider: NSObject, ARSessionDelegate {
 //        }
 //    }
     
-    // viene richiamata ad ogni frame (anche quando non inquadriamo nessun marker), calcola la posizione dell'utente rispetto all'orgine SCA (la aggiorna con tecn. dead reckoning)
+    /// Method called at each frame, even when we don't frame any marker
     public func session(_ session: ARSession, didUpdate frame: ARFrame) {
         calculateDevicePose(frame)
     }
 
     
-    //MARK: Calcolo della Posizione
+    //MARK: Position Calculation
     
+    /// Moves the AR Origin so that it matches the Floor Origin
     private func fixAROrigin(imageAnchor: ARImageAnchor, location: Location) {
         let alpha_a = getSCARotationY(imageAnchor)
         let alpha_m = location.heading
         let alpha = -(alpha_a - alpha_m)
-//        print("alpha_a: \(alpha_a)    alpha_m: \(alpha_m)  -> alpha: \(alpha)")
         
         let (x_m, y_m) = (Float(location.coordinates.x), Float(location.coordinates.y))
         let (x_a, z_a) = getMarkerSCACoordinates(imageAnchor)
-//        print("x_a:\(x_a)  z_a:\(z_a)")
         
         let x_b = x_a * cos(alpha) - z_a * sin(alpha)
         let y_b = x_a * sin(alpha) + z_a * cos(alpha)
         
         let x_t = x_m - x_b
         let y_t = y_m - y_b
-//        print("x_t:\(x_t)  y_t:\(y_t)")
         
-        // ruoto origine SCA
+        // rotate ar origin
         let cosa = cos(alpha)
         let sina = sin(alpha)
         let rotationMatrix = simd_float4x4(
@@ -240,34 +240,35 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         )
         self.arView.session.setWorldOrigin(relativeTransform: rotationMatrix)
         
-        // traslo origine SCA
+        // move ar origin
         let translationMatrix = simd_float4x4(
             SIMD4(1, 0, 0, 0),
             SIMD4(0, 1, 0, 0),
             SIMD4(0, 0, 1, 0),
-            SIMD4(-x_t, imageAnchor.transform.columns.3.y, -y_t, 1) // andiamo a settare x con x_t e z con y_t, settiamo y all'altezza del marker (non importa)
+            SIMD4(-x_t, imageAnchor.transform.columns.3.y, -y_t, 1) // translation: x=-x_t, z=-y_t, y=height of the marker ('cause we don't care)
         )
         let newWorldTransform = simd_mul(rotationMatrix, translationMatrix)
         self.arView.session.setWorldOrigin(relativeTransform: newWorldTransform)
         originFixed = true
     }
     
+    /// Returns the coordiates (x,z) of the Marker Image in the AR Coordinate System
     private func getMarkerSCACoordinates(_ imageAnchor: ARImageAnchor)-> (Float, Float) {
         let coordinates = imageAnchor.transform.columns.3
-        return (coordinates.x, coordinates.z) // ritorna (x_a, z_a), y non ci interessa
+        return (coordinates.x, coordinates.z) //(x_a, z_a)
     }
         
+    /// Returns the rotation of the y axis relative to the AR Origin
     private func getSCARotationY(_ imageAnchor: ARImageAnchor) -> Float{
         let node = SCNNode()
         node.transform = SCNMatrix4(imageAnchor.transform)
-//        return (node.rotation.y * node.rotation.w) // in radianti
-//        return atan2(imageAnchor.transform[2][0], imageAnchor.transform[2][2])
         let q = node.orientation
         return -atan2f((2*q.y*q.w)-(2*q.x*q.z), 1-(2*pow(q.y,2))-(2*pow(q.z,2)))
     }
     
+    /// Calculates the user's position within relative to the AR Origin (that now matches with the Floor Origin). It uses dead reckoning methods.
     private func calculateDevicePose(_ frame: ARFrame) {
-        if(originFixed) { // solo se abbiamo trovato un marker e abbiamo fixato l'origine SCA
+        if(originFixed) { // only if the ar origin is fixed
             let transform = frame.camera.transform.columns.3
             let devicePosition = simd_float3(x: transform.x, y: transform.y, z: transform.z)
             let deviceOrientation = frame.camera.eulerAngles.y
@@ -275,9 +276,4 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             notifyLocationUpdate(newLocation: newPosition)
         }
     }
-}
-
-extension Float {
-    var degreesToRadians: Self { self * .pi / 180 }
-    var radiansToDegrees: Self { self * 180 / .pi }
 }

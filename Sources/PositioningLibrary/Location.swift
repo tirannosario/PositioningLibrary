@@ -10,7 +10,7 @@ import CoreGraphics
 
 public class Location: CustomStringConvertible {
     public var coordinates: CGPoint
-    public var heading: Float
+    public var heading: Float // heading relative to the floor origin
     public var floor: Floor
     
     public init(coordinates: CGPoint, heading: Float, floor: Floor){

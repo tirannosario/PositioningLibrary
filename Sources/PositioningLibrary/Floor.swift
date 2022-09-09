@@ -13,9 +13,9 @@ public class Floor: CustomStringConvertible {
     public var name: String
     public var number: Int
     public var building: Building
-    public var maxWidth: Float // punto max a dx
-    public var maxHeight: Float // punto max in alto
-    public var floorMap: UIImage? // piantina del piano (opzionale)
+    public var maxWidth: Float // the width of the floor in meters
+    public var maxHeight: Float // the height of the floor in meters
+    public var floorMap: UIImage? // image of the floor map
     
     public init(id: String, name: String, number: Int, building: Building, maxWidth: Float, maxHeight: Float, floorMap: UIImage? = nil) {
         self.id = id
@@ -28,6 +28,5 @@ public class Floor: CustomStringConvertible {
     }
     
     public var description: String { return "Floor: id=\(id)  name=\(name)"}
-
 }
 
