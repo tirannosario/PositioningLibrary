@@ -132,7 +132,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                     removeAllAnchors(markerID)
                 }
                 // the user visit a different floor of the same building
-                else if(self.currentFloor?.number != floor.number) {
+                else if(self.currentFloor?.id != floor.id) {
                     self.currentFloor = floor
                     notifyFloorChanged(newFloor: self.currentFloor!)
                     removeAllAnchors(markerID)
