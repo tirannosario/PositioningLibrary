@@ -34,6 +34,8 @@ Una classe che aderisce a `LocationObserver` riceve aggiornamenti per quanto rig
     - `Floor` (tramite `onFloorChanged`)
     - `Building` (tramite `onBuildingChanged`)
 2. È necessario definire i dati che verranno usati dalla libreria per il calcolo della posizione. Sono rese possibili due modalità.
+    >:warning: È necessario che gli IDs di Building, Floor e Marker siano differenti tra di loro.
+
     - __Creazione Dinamica__
         - L'utente definisce dinamicamente i dati, definendo i vari Buildings, Floors e ovviamente Markers. Ogni `Marker` avrà un riferimento ad una immagine che dovrà essere inserita negli **Assets** del progetto. Inoltre per ogni `Marker` si dovrà definire la propria `Location`, con coordinate e orientamento riferite all'origine degli assi del relativo `Floor` (es. angolo in alto a sinistra del piano).
         Una volta definiti i dati, possiamo istanziare un oggetto della classe `LocationProvider` passandogli la **ARView** della nostra app (necessaria visto che usamiamo tecniche di AR) e la lista dei `Marker` appena creati. Poi sull'oggetto `LocationProvider` sarà possibile registrare la nostra classe come `LocationObserver` e successivamente richiamare il metodo `start()` per far iniziare il calcolo della posizione. 
