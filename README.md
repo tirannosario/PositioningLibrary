@@ -70,6 +70,8 @@ Una classe che aderisce a `LocationObserver` riceve aggiornamenti per quanto rig
 let floor0 = Floor(id: "f1_1", name: "piano terra", number: 0, building: b1, maxWidth: 8.16, maxHeight: 5.3, floorMap: UIImage(named: "piano0")!)
 ```
 - Nel caso dell'uso di __creazione statica__ dei dati, si inserisce il riferimento al nome nel campo `floorMap` nel documento JSON.
+> :warning: È **necessario** che l'immagine caricata sia senza sfondo (ad esempio .png) e senza nessun padding (no spazi tra inizio immagine e inizio mappa). Inoltre la punta in alto a sinistra della mappa deve coincidere con l'origine del Floor scelto nel momento del caricamento dei Marker. Quindi ad esempio per il floor dell'esempio precedente, l'immagine sarà questa: <p align = "center"><img src="./pic/floor_img.png" width="200"></p>
+
 2. È possibie mostrare la mappa indoor attraverso il componente `FloorMapView`, che può essere visualizzato in diverse maniere:
     - Da **codice**: L'oggetto `LocationProvider` mette a disposizione il metodo `showFloorMap` che si occupa di mostrare a schermo la mappa. Quando si invoca `showFloorMap` è necessario passare l'oggetto `CGRect` che indica posizione e grandezza del `FloorMapView` da visuallizare.
     ```swift
