@@ -40,7 +40,7 @@ Una classe che aderisce a `LocationObserver` riceve aggiornamenti per quanto rig
         
         - Esempio:
         ```swift
-                let b1 = Building(id: "b1", name: "Casa")
+                let b1 = Building(id: "b1", name: "MoMA", coord: CLLocationCoordinate2D(latitude: 40.76141278416226, longitude: -73.97759781909012))
                 let f_1 = Floor(id: "f1_1", name: "piano terra", number: 0, building: b1, maxWidth: 5.10, maxHeight: 2.43)
                 let l1 = Location(coordinates: CGPoint(x: 1.95, y: 0), heading: 0, floor: f_1)
                 let l2 = Location(coordinates: CGPoint(x: 0.33, y: 0.88), heading: -0.785, floor: f_1)
@@ -63,5 +63,28 @@ Una classe che aderisce a `LocationObserver` riceve aggiornamenti per quanto rig
             locationProvider.start()
         ```
 ---
+## :door: Visualizzare la Mappa Indoor
+> La libreria permette anche di mostrare la posizione dell'utente all'interno della mappa del piano in cui si trova, aggiornandone la posizione in tempo reale.
+1. Per poter mostrare la posizione del device all'interno della mappa è necessario prima di tutto fornire l'immagine della pianta del piano. È possibile inserirla tra gli __Assets__ del progetto e mettere il relativo riferimento nel parametro opzionale `floorMap` nel costruttore del `Floor`.
+```swift
+let floor0 = Floor(id: "f1_1", name: "piano terra", number: 0, building: b1, maxWidth: 8.16, maxHeight: 5.3, floorMap: UIImage(named: "piano0")!)
+```
+- Nel caso dell'uso di __creazione statica__ dei dati, si inserisce il riferimento al nome nel campo `floorMap` nel documento JSON.
+2. È possibie mostrare la mappa indoor attraverso il componente `FloorMapView`, che può essere visualizzato in diverse maniere:
+    - Da **codice**: L'oggetto `LocationProvider` mette a disposizione il metodo `showFloorMap` che si occupa di mostrare a schermo la mappa. Quando si invoca `showFloorMap` è necessario passare l'oggetto `CGRect` che indica posizione e grandezza del `FloorMapView` da visuallizare.
+    ```swift
+    self.locationProvider.showFloorMap(CGRect(x: 20, y: 40, width: 247, height: 323))
+    ```
+    ---
+    - Utilizzando il componente nello **Storyboard**: Semplicemente si trascina un componente View dalla Object Library nel View Controller e si sette la relativa classe a `FloorMapView`.
+        <p align = "center">
+            <img src="./pic/customclass.png" width="250">
+        </p>
+    Successivamente si dovrà creare un Outlet per la `FloorMapView`, aggiungerla come subView della View principale e registrare il componente come Observer del `LocationProvider`.
+    ```swift
+    arView.addSubview(floorMapView)
+    self.locationProvider.addLocationObserver(locationObserver: floorMapView)
+    ```
+---
  ## :eyes: Demo
- Alla seguente [repo](https://github.com/tirannosario/TestPositioningLibrary) è presente una semplice app iOS che fa uso della libreria, mostrando a schermo i dati della **pose** dell'utente.
+ Alla seguente [repo](https://github.com/tirannosario/TestPositioningLibrary) è presente una semplice app iOS che fa uso della libreria, mostrando a schermo sia i dati della **pose** dell'utente, sia la mappa con la posizione.
