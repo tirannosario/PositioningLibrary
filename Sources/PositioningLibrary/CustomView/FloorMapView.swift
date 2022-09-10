@@ -65,12 +65,16 @@ public class FloorMapView: UIView {
     
     /// The map camera begins to follow the user's position. Any gesture on the map is blocked
     public func startFollowUser() {
-        self.followUser = true
+        if(self.userAnnotation != nil) {
+            self.followUser = true
+        }
     }
     
     /// The map camera stops to follo the user's position.
     public func stopFollowUser() {
-        self.followUser = false
+        if(self.userAnnotation != nil) {
+            self.followUser = false
+        }
     }
     
     /// Manages the change of Floor, modifying the visual elements of the map.
