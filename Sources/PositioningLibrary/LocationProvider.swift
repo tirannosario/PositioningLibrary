@@ -88,6 +88,11 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         }
     }
     
+    /// Centers the map camera in the user's position
+    public func centerToUserPosition() {
+        self.floorMapView?.centerToUserPosition()
+    }
+    
     /// The map camera starts following the user's position. When this option is on, it's not possible to move the camera
     public func startFollowUser() {
         self.floorMapView?.startFollowUser()

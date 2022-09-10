@@ -55,6 +55,12 @@ public class FloorMapView: UIView {
     }
     
     //MARK: Utility
+    
+    /// Centers the map camera in the user's position
+    public func centerToUserPosition() {
+        self.mapView.centerCoordinate = userAnnotation!.coordinate
+    }
+    
     /// The map camera begins to follow the user's position. Any gesture on the map is blocked
     public func startFollowUser() {
         self.followUser = true
