@@ -71,9 +71,6 @@ public class CustomJsonParser {
                         }
                     }
                     else { throw NotValid.noMarkers }
-//                    print("Buildings-> \(myBuilding)")
-//                    print("Floors-> \(myFloors)")
-//                    print("Markers-> \(myMarkers)")
                 }
                 else { throw NotValid.badStructure }
                 
