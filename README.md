@@ -3,7 +3,9 @@
     <img src="./pic/icon.png" width="74">
 </div>
 
->The library allows the developer to access the position and orientation of the device in an indoor space, through a few lines of code. The library uses Augmented Reality-based Indoor Positioning techniques, in particular focused on the recognition of graphic **Markers** in the surrounding space.
+>The library allows the developer to access the position and orientation of the device in an indoor space, through a few lines of code. The library uses Augmented Reality-based Indoor Positioning techniques, in particular focused on the recognition of graphic **Markers** in the surrounding space. 
+
+- [Watch the Demo](https://youtu.be/U5KSt51Pyjg)
 ---
 The library provides location updates through an instance of the `LocationProvider` class, which is provided with a set of user-defined objects:
 - `Building`: identifies a structure
