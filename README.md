@@ -3,24 +3,24 @@
     <img src="./pic/icon.png" width="74">
 </div>
 
->La libreria permette allo sviluppatore di accedere alla posizione e all'orientamento del device in uno spazio indoor, attraverso poche righe di codice. La libreria usa delle tecniche di Indoor Positioning basate sull'Augmented Reality, in particolare concentrate sul riconoscimento di **Marker** grafici nello spazio circostante.
+>The library allows the developer to access the position and orientation of the device in an indoor space, through a few lines of code. The library uses Augmented Reality-based Indoor Positioning techniques, in particular focused on the recognition of graphic **Markers** in the surrounding space.
 ---
-La libreria fornisce aggiornamenti di posizione attraverso un'istanza della classe `LocationProvider`, a cui vengono forniti una serie di oggetti definiti dall'utilizzatore:
-- `Building`: identifica una struttura
-- `Floor`: identifica un singolo piano di una struttura (*Building*)
-- `Marker`: identifica un marker, ha una *Location* che lo localizza in un *Floor*
-- `Location`: identifica una **pose** (posizione e orientamento) rispetto all'origine degli assi del *Floor* di appartenenza
+The library provides location updates through an instance of the `LocationProvider` class, which is provided with a set of user-defined objects:
+- `Building`: identifies a structure
+- `Floor`: identifies a single floor of a structure (*Building*)
+- `Marker`: identifies a marker, has a *Location* that locates it in a *Floor*
+- `Location`: identifies a **pose** (position and orientation) with respect to the origin of the axes of the *Floor* it belongs to
 ---
-## :round_pushpin: Posizionamento dei Marker
-I Markers andranno posizionati nel piano da tracciare, e successivamente andranno definite le relative pose. 
-- La **pose** di un Marker è definita da:
-    -  **x,y** a partire dall'origine, espresse in metri
-    - **heading** (orientamento) rispetto all'origine, espresso in radianti
+## :round_pushpin: Positioning of Markers
+The Markers will be positioned in the floor to be traced, and subsequently the relative poses will be defined. 
+- The **pose** of a Marker is defined by:
+    - **x, y** starting from the origin, expressed in meters
+    - **heading** (orientation) with respect to the origin, expressed in radians
     <p align = "center">
         <img src="./pic/floor_example.svg">
     </p>
     <p align = "center">
-    Esempio di Floor (in questo caso una piccola stanza) con i relativi Markers
+    Example of Floor (in this case a small room) with relative Markers
     </p>
 - :large_orange_diamond: M1 = <x:1.95, y:0>, heading: 0
 - :large_orange_diamond: M2 = <x:0.33, y:0.88>, heading: -0.785
@@ -34,23 +34,23 @@ You can also navigate to your target’s General pane, and in the “Frameworks,
 Now that you have the Package, you can import `PositioningLibrary` into your classes.
 
 ---
-## :hammer: Uso
-1. Per ricevere gli aggiornamenti di posizione è necessario rendere la propria classe aderente al protocollo `LocationObserver`, implementandone i relativi metodi.
-Una classe che aderisce a `LocationObserver` riceve aggiornamenti per quanto riguarda il cambio di posizione, attraverso gli oggetti:
-    - `ApproxLocation`, ovvero coordinate, orientamento, raggio e angolo di approssimazione (tramite `onLocationUpdate`)
-    - `Floor` (tramite `onFloorChanged`)
-    - `Building` (tramite `onBuildingChanged`)
-2. È necessario definire i dati che verranno usati dalla libreria per il calcolo della posizione. Sono rese possibili due modalità.
-    >:warning: È necessario che gli IDs di Building, Floor e Marker siano differenti tra di loro.
+## :hammer: How To Use
+1. To receive location updates, you need to make your class conform to the `LocationObserver` protocol by implementing its methods.
+A class that conforms to `LocationObserver` receives updates regarding the change of location, through objects:
+    - `ApproxLocation`, i.e. coordinates, orientation, radius and angle of approximation (via `onLocationUpdate`)
+    - `Floor` (via `onFloorChanged`)
+    - `Building` (via `onBuildingChanged`)
+2. You need to define the data that will be used by the library for the position calculation. Two ways are possible:
+    >:warning: The Building, Floor and Marker IDs must be different from each other.
 
-    - __Creazione Dinamica__
-        - L'utente definisce dinamicamente i dati, definendo i vari Buildings, Floors e ovviamente Markers. Ogni `Marker` avrà un riferimento ad una immagine che dovrà essere inserita negli **Assets** del progetto. Inoltre per ogni `Marker` si dovrà definire la propria `Location`, con coordinate e orientamento riferite all'origine degli assi del relativo `Floor` (es. angolo in alto a sinistra del piano).
-        Una volta definiti i dati, possiamo istanziare un oggetto della classe `LocationProvider` passandogli la **ARView** della nostra app (necessaria visto che usamiamo tecniche di AR) e la lista dei `Marker` appena creati. Poi sull'oggetto `LocationProvider` sarà possibile registrare la nostra classe come `LocationObserver` e successivamente richiamare il metodo `start()` per far iniziare il calcolo della posizione. 
+    - __Dynamic Creation__
+        - The user dynamically defines the data, defining the various Buildings, Floors and obviously Markers. Each `Marker` will have a reference to an image that must be inserted in the **Assets** of the project. Furthermore, for each `Marker` it will be necessary to define its own `Location`, with coordinates and orientation referring to the origin of the axes of the relative `Floor` (for example, upper left corner of the plane).
+        Once the data is defined, we can instantiate an object of the `LocationProvider` class by passing it the **ARView** of our app (necessary since we use AR techniques) and the list of newly created `Markers`. Then on the `LocationProvider` object it will be possible to register our class as `LocationObserver` and then call the `start()` method to start the position calculation. 
         
-        - Esempio:
+        - Example:
         ```swift
                 let b1 = Building(id: "b1", name: "MoMA", coord: CLLocationCoordinate2D(latitude: 40.76141278416226, longitude: -73.97759781909012))
-                let f_1 = Floor(id: "f1_1", name: "piano terra", number: 0, building: b1, maxWidth: 5.10, maxHeight: 2.43)
+                let f_1 = Floor(id: "f1_1", name: "ground floor", number: 0, building: b1, maxWidth: 5.10, maxHeight: 2.43)
                 let l1 = Location(coordinates: CGPoint(x: 1.95, y: 0), heading: 0, floor: f_1)
                 let l2 = Location(coordinates: CGPoint(x: 0.33, y: 0.88), heading: -0.785, floor: f_1)
                 let m1 = Marker(id: "S1", image: UIImage(named: "S1")!, physicalWidth: 0.12, location: l1)
@@ -62,40 +62,40 @@ Una classe che aderisce a `LocationObserver` riceve aggiornamenti per quanto rig
         ```
         ---
 
-    - __Creazione Statica__
-        - L'utente può definire un proprio documento JSON seguendo un determinato schema ([esempio](https://github.com/tirannosario/TestPositioningLibrary/blob/main/TryLibrary/mydata.json) di doc JSON). (Le immagini dovranno essere comunque caricate sugli **Assets** del progetto, il JSON conterrà il riferimento al loro nome). Quindi sarà possibile istanziare un oggetto della classe `LocationProvider` passandogli la **ARView** e il nome del documento JSON. Poi sull'oggetto `LocationProvider` sarà possibile registrare la nostra classe come `LocationObserver` e successivamente richiamare il metodo `start()` per far iniziare il calcolo della posizione. 
+    - __Static Creation__
+        - The user can define his own JSON document following a certain pattern ([example](https://github.com/tirannosario/TestPositioningLibrary/blob/main/TryLibrary/mydata.json) of JSON doc). (The images must in any case be loaded on the **Assets** of the project, the JSON will contain the reference to their name). Then it will be possible to instantiate an object of the `LocationProvider` class by passing it the **ARView** and the name of the JSON document. Then on the `LocationProvider` object it will be possible to register our class as `LocationObserver` and then call the `start()` method to start the position calculation. 
 
-        - Esempio:
+        - Example:
         ```swift
             let locationProvider = LocationProvider(arView: arView, jsonName: "mydata")
             locationProvider.addLocationObserver(locationObserver: self)
             locationProvider.start()
         ```
 ---
-## :door: Visualizzare la Mappa Indoor
-> La libreria permette anche di mostrare la posizione dell'utente all'interno della mappa del piano in cui si trova, aggiornandone la posizione in tempo reale.
-1. Per poter mostrare la posizione del device all'interno della mappa è necessario prima di tutto fornire l'immagine della pianta del piano. È possibile inserirla tra gli __Assets__ del progetto e mettere il relativo riferimento nel parametro opzionale `floorMap` nel costruttore del `Floor`.
+## :door: Display the Indoor Map
+> The library also allows the developer to show the user's position within the map of the floor he is in, updating his position in real-time.
+1. To be able to show the position of the device on the map, it is first of all necessary to provide the image of the floor plan. You can put it in the __Assets__ of the project and place its reference in the optional parameter `floorMap` in the `Floor` constructor.
 ```swift
-let floor0 = Floor(id: "f1_1", name: "piano terra", number: 0, building: b1, maxWidth: 8.16, maxHeight: 5.3, floorMap: UIImage(named: "piano0")!)
+let floor0 = Floor(id: "f1_1", name: "ground floor", number: 0, building: b1, maxWidth: 8.16, maxHeight: 5.3, floorMap: UIImage(named: "piano0")!)
 ```
-- Nel caso dell'uso di __creazione statica__ dei dati, si inserisce il riferimento al nome nel campo `floorMap` nel documento JSON.
-> :warning: È **necessario** che l'immagine caricata sia senza sfondo (ad esempio .png) e senza nessun padding (no spazi tra inizio immagine e inizio mappa). Inoltre la punta in alto a sinistra della mappa deve coincidere con l'origine del Floor scelto nel momento del caricamento dei Marker. Quindi ad esempio per il floor dell'esempio precedente, l'immagine sarà questa: <p align = "center"><img src="./pic/floor_img.png" width="200"></p>
+- In the case of using __static data creation__, insert the reference to the image name in the `floorMap` field in the JSON document.
+> :warning: It is **necessary** that the loaded image has no background (for example .png) and is without any padding (no spaces between the start of the image and the start of the map). Furthermore, the upper left corner of the map must coincide with the origin of the Floor chosen when loading the Markers. So for example for the floor of the previous example, the image will be this: <p align = "center"><img src="./pic/floor_img.png" width="200"></p>
 
-2. È possibie mostrare la mappa indoor attraverso il componente `FloorMapView`, che può essere visualizzato in diverse maniere:
-    - Da **codice**: L'oggetto `LocationProvider` mette a disposizione il metodo `showFloorMap` che si occupa di mostrare a schermo la mappa. Quando si invoca `showFloorMap` è necessario passare l'oggetto `CGRect` che indica posizione e grandezza del `FloorMapView` da visuallizare.
+2. It is possible to show the indoor map through the `FloorMapView` component, which can be displayed in different ways:
+    - From **code**: The `LocationProvider` object provides the `showFloorMap` method which takes care of displaying the map on the screen. When invoking `showFloorMap` it is necessary to pass the `CGRect` object which indicates the position and size of the `FloorMapView` to be displayed.
     ```swift
     self.locationProvider.showFloorMap(CGRect(x: 20, y: 40, width: 247, height: 323))
     ```
     ---
-    - Utilizzando il componente nello **Storyboard**: Semplicemente si trascina un componente View dalla Object Library nel View Controller e si sette la relativa classe a `FloorMapView`.
+    - Using the component in the **Storyboard**: Simply drag a View component from the Object Library into the View Controller and set its class to `FloorMapView`.
         <p align = "center">
             <img src="./pic/customclass.png" width="250">
         </p>
-    Successivamente si dovrà creare un Outlet per la `FloorMapView`, aggiungerla come subView della View principale e registrare il componente come Observer del `LocationProvider`.
+    Next you will have to create an Outlet for the `FloorMapView`, add it as a subView of the main View and register the component as an Observer of the `LocationProvider`.
     ```swift
     arView.addSubview(floorMapView)
     self.locationProvider.addLocationObserver(locationObserver: floorMapView)
     ```
 ---
  ## :eyes: Demo
- Alla seguente [repo](https://github.com/tirannosario/TestPositioningLibrary) è presente una semplice app iOS che fa uso della libreria, mostrando a schermo sia i dati della **pose** dell'utente, sia la mappa con la posizione.
+ In the following [repo](https://github.com/tirannosario/TestPositioningLibrary) there is a simple iOS app that uses the library, showing both the user's **pose** data and the map with the location on the screen.
