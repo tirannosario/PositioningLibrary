@@ -27,6 +27,13 @@ I Markers andranno posizionati nel piano da tracciare, e successivamente andrann
 - :large_orange_diamond: M3 = <x:3.82, y:1.87>, heading: 3.14
 - :large_orange_diamond: M4 = <x:5.10, y:0.85>, heading: 1.57
 ---
+## :open_file_folder: Installation
+
+To add a package dependency to your Xcode project, select *File > Add Packages* and enter the repository URL. 
+You can also navigate to your target’s General pane, and in the “Frameworks, Libraries, and Embedded Content” section, click the + button, select Add Other, and choose Add Package Dependency ([more info here](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app)).
+Now that you have the Package, you can import `PositioningLibrary` into your classes.
+
+---
 ## :hammer: Uso
 1. Per ricevere gli aggiornamenti di posizione è necessario rendere la propria classe aderente al protocollo `LocationObserver`, implementandone i relativi metodi.
 Una classe che aderisce a `LocationObserver` riceve aggiornamenti per quanto riguarda il cambio di posizione, attraverso gli oggetti:
