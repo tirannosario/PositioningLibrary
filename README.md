@@ -5,7 +5,8 @@
 
 >The library allows the developer to access the position and orientation of the device in an indoor space, through a few lines of code. The library uses Augmented Reality-based Indoor Positioning techniques, in particular focused on the recognition of graphic **Markers** in the surrounding space. 
 
-- [Watch the Demo](https://youtu.be/U5KSt51Pyjg)
+###[Watch the Demo](https://youtu.be/U5KSt51Pyjg)
+
 ---
 The library provides location updates through an instance of the `LocationProvider` class, which is provided with a set of user-defined objects:
 - `Building`: identifies a structure
@@ -58,9 +59,9 @@ A class that conforms to `LocationObserver` receives updates regarding the chang
                 let m1 = Marker(id: "S1", image: UIImage(named: "S1")!, physicalWidth: 0.12, location: l1)
                 let m2 = Marker(id: "S2", image: UIImage(named: "S2")!, physicalWidth: 0.12, location: l2)
 
-                let locationProvider = LocationProvider(arView: arView, markers: [m1, m2])
-                locationProvider.addLocationObserver(locationObserver: self)
-                locationProvider.start()
+                self.locationProvider = LocationProvider(arView: arView, markers: [m1, m2])
+                self.locationProvider.addLocationObserver(locationObserver: self)
+                self.locationProvider.start()
         ```
         ---
 
@@ -69,9 +70,9 @@ A class that conforms to `LocationObserver` receives updates regarding the chang
 
         - Example:
         ```swift
-            let locationProvider = LocationProvider(arView: arView, jsonName: "mydata")
-            locationProvider.addLocationObserver(locationObserver: self)
-            locationProvider.start()
+            self.locationProvider = LocationProvider(arView: arView, jsonName: "mydata")
+            self.locationProvider.addLocationObserver(locationObserver: self)
+            self.locationProvider.start()
         ```
 ---
 ## :door: Display the Indoor Map
