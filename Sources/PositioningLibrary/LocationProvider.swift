@@ -19,7 +19,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     private var currentFloor: Floor?
     private var arView: ARView
     private var locationObservers: [LocationObserver] // list of Observers who will be notified of the change of position
-    private var floorMapView: FloorMapView!
+    private var floorMapView: FloorMapView?
     private var originFixed = false // true if AR Origin==Floor Origin
     
     //MARK: Setup
@@ -69,8 +69,8 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     public func showFloorMap(_ cgRect: CGRect) {
         if(self.floorMapView == nil) {
             floorMapView = FloorMapView(frame: cgRect)
-            arView.addSubview(floorMapView)
-            addLocationObserver(locationObserver: floorMapView)
+            arView.addSubview(floorMapView!)
+            addLocationObserver(locationObserver: floorMapView!)
         }
         else {
             print("An FloorMap already exist")
@@ -80,7 +80,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     /// Hides the Map
     public func hideFloorMap() {
         if(self.floorMapView != nil) {
-            self.floorMapView.removeFromSuperview()
+            self.floorMapView!.removeFromSuperview()
             self.floorMapView = nil
         }
         else {
