@@ -11,14 +11,15 @@ import ARKit
 import UIKit
 import RealityKit
 import SceneKit
+import WorldRepresentationLibrary
 
 public class LocationProvider: NSObject, ARSessionDelegate {
     private var markers: [Marker]
-    private var userLocation: Location?
+    private var userLocation: LocalLocation?
     private var currentBuilding: Building?
     private var currentFloor: Floor?
     private var arView: ARView
-    private var locationObservers: [LocationObserver] // list of Observers who will be notified of the change of position
+    private var locationObservers: [ArLocationObserver] // list of Observers who will be notified of the change of position
     private var floorMapView: FloorMapView?
     private var originFixed = false // true if AR Origin==Floor Origin
     
@@ -39,12 +40,12 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     }
     
     /// Adds the specified LocationObserver to the list of observers who will be notified
-    public func addLocationObserver(locationObserver: LocationObserver) {
+    public func addLocationObserver(locationObserver: ArLocationObserver) {
         self.locationObservers.append(locationObserver)
     }
     
     /// Removes the specified LocationObserver from the list of observers
-    public func removeLocationObserver(locationObserver: LocationObserver) {
+    public func removeLocationObserver(locationObserver: ArLocationObserver) {
         self.locationObservers = self.locationObservers.filter{$0 !== locationObserver}
     }
      
@@ -64,44 +65,44 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         self.arView.session.run(configuration)
     }
     
-    /// Shows in the cgRect defined, the Map of the current floor (if the map exists)
-    /// - Parameter cgRect: Defines the size and position of the map to show
-    public func showFloorMap(_ cgRect: CGRect) {
-        if(self.floorMapView == nil) {
-            floorMapView = FloorMapView(frame: cgRect)
-            arView.addSubview(floorMapView!)
-            addLocationObserver(locationObserver: floorMapView!)
-        }
-        else {
-            print("An FloorMap already exist")
-        }
-    }
-    
-    /// Hides the Map
-    public func hideFloorMap() {
-        if(self.floorMapView != nil) {
-            self.floorMapView!.removeFromSuperview()
-            self.floorMapView = nil
-        }
-        else {
-            print("Any FloorMap exist")
-        }
-    }
-    
-    /// Centers the map camera in the user's position
-    public func centerToUserPosition() {
-        self.floorMapView?.centerToUserPosition()
-    }
-    
-    /// The map camera starts following the user's position. When this option is on, it's not possible to move the camera
-    public func startFollowUser() {
-        self.floorMapView?.startFollowUser()
-    }
-    
-    /// The map camera stops following the user's position.
-    public func stopFollowUser() {
-        self.floorMapView?.stopFollowUser()
-    }
+//    /// Shows in the cgRect defined, the Map of the current floor (if the map exists)
+//    /// - Parameter cgRect: Defines the size and position of the map to show
+//    public func showFloorMap(_ cgRect: CGRect) {
+//        if(self.floorMapView == nil) {
+//            floorMapView = FloorMapView(frame: cgRect)
+//            arView.addSubview(floorMapView!)
+//            addLocationObserver(locationObserver: floorMapView!)
+//        }
+//        else {
+//            print("An FloorMap already exist")
+//        }
+//    }
+//
+//    /// Hides the Map
+//    public func hideFloorMap() {
+//        if(self.floorMapView != nil) {
+//            self.floorMapView!.removeFromSuperview()
+//            self.floorMapView = nil
+//        }
+//        else {
+//            print("Any FloorMap exist")
+//        }
+//    }
+//
+//    /// Centers the map camera in the user's position
+//    public func centerToUserPosition() {
+//        self.floorMapView?.centerToUserPosition()
+//    }
+//
+//    /// The map camera starts following the user's position. When this option is on, it's not possible to move the camera
+//    public func startFollowUser() {
+//        self.floorMapView?.startFollowUser()
+//    }
+//
+//    /// The map camera stops following the user's position.
+//    public func stopFollowUser() {
+//        self.floorMapView?.stopFollowUser()
+//    }
     
     
     //MARK: Utility
@@ -127,7 +128,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         for marker in markers {
             if marker.id == markerID {
                 let floor = marker.location.floor
-                let building = floor.building
+                let building = floor.building!
                 // the user visit a new building or a different one
                 if(self.currentBuilding == nil || self.currentBuilding?.id != building.id) {
                     self.currentBuilding = building
@@ -170,7 +171,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         }
     }
     
-    private func notifyLocationUpdate(newLocation: ApproxLocation) {
+    private func notifyLocationUpdate(newLocation: LocalLocation) {
         for locationObserver in self.locationObservers {
             locationObserver.onLocationUpdate(newLocation)
         }
@@ -220,12 +221,12 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     //MARK: Position Calculation
     
     /// Moves the AR Origin so that it matches the Floor Origin
-    private func fixAROrigin(imageAnchor: ARImageAnchor, location: Location) {
+    private func fixAROrigin(imageAnchor: ARImageAnchor, location: LocalLocation) {
         let alpha_a = getSCARotationY(imageAnchor)
         let alpha_m = location.heading
         let alpha = -(alpha_a - alpha_m)
         
-        let (x_m, y_m) = (Float(location.coordinates.x), Float(location.coordinates.y))
+        let (x_m, y_m) = (Float(location.position.x), Float(location.position.y))
         let (x_a, z_a) = getMarkerSCACoordinates(imageAnchor)
         
         let x_b = x_a * cos(alpha) - z_a * sin(alpha)
@@ -277,7 +278,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             let transform = frame.camera.transform.columns.3
             let devicePosition = simd_float3(x: transform.x, y: transform.y, z: transform.z)
             let deviceOrientation = frame.camera.eulerAngles.y
-            let newPosition = ApproxLocation(coordinates: CGPoint(x: CGFloat(devicePosition.x), y: CGFloat(devicePosition.z)), heading: deviceOrientation, floor: self.currentFloor!, approxRadius: 0, approxAngle: 0)
+            let newPosition = LocalLocation(position: CGPoint(x: CGFloat(devicePosition.x), y: CGFloat(devicePosition.z)), positionAltitude: Float(devicePosition.y), heading: deviceOrientation, ts: Date(), approxPosition: 0, approxHeading: 0, floor: self.currentFloor!)
             notifyLocationUpdate(newLocation: newPosition)
         }
     }

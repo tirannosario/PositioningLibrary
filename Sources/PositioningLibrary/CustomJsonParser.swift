@@ -8,6 +8,7 @@ import Foundation
 import CoreGraphics
 import UIKit
 import MapKit
+import WorldRepresentationLibrary
 
 
 public class CustomJsonParser {
@@ -47,19 +48,28 @@ public class CustomJsonParser {
                             myFloors.append(Floor(id: f["id"] as! String,
                                                   name: f["name"] as! String,
                                                   number: f["number"] as! Int,
+                                                  coord: CLLocation(latitude: f["latitude"] as! Double, longitude: f["longitude"] as! Double),
+                                                  heading: f["heading"] as! Float,
                                                   building: getBuilding(buildingID: f["building"] as! String),
-                                                  maxWidth: getFloat(f["maxWidth"]!),
-                                                  maxHeight: getFloat(f["maxHeight"]!),
+                                                  width: getFloat(f["width"]!),
+                                                  height: getFloat(f["height"]!),
+                                                  ceilingHeight: getFloat(f["ceilingHeight"]!),
                                                   floorMap: f["floorMap"] != nil ? UIImage(named: f["floorMap"] as! String) : nil))
                         }
                     }
                     else { throw NotValid.noFloors }
                     
+                    //add the floors to the relative buildings
+                    for b in myBuilding {
+                        b.addFloors(floors: myFloors.filter{f in f.building===b})
+                    }
+                    
                     if let markers = dictionary["markers"] as? [Any] {
                         for marker in markers {
                             let m = marker as! [String:Any]
                             if let l = m["location"] as? [String:Any] {
-                            let location = Location(coordinates: CGPoint(x: l["x"] as! Double, y: l["y"] as! Double),
+                            let location = LocalLocation(position: CGPoint(x: l["x"] as! Double, y: l["y"] as! Double),
+                                                    positionAltitude: getFloat(l["altitude"]!),
                                                     heading: getFloat(l["heading"]!),
                                                     floor: getFloor(floorID: l["floor"] as! String))
                             myMarkers.append(Marker(id: m["id"] as! String,

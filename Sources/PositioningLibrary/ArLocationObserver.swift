@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import WorldRepresentationLibrary
 
-public protocol LocationObserver: AnyObject {
-    func onLocationUpdate(_ newLocation: ApproxLocation)
+public protocol ArLocationObserver: AnyObject {
+    func onLocationUpdate(_ newLocation: LocalLocation)
     func onBuildingChanged(_ newBuilding: Building)
     func onFloorChanged(_ newFloor: Floor)
 }
