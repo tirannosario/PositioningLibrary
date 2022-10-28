@@ -23,6 +23,11 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     private var floorMapView: FloorMapView?
     private var originFixed = false // true if AR Origin==Floor Origin
     
+    // AR Accuracy variables
+    private var insufficentFeatures = 0
+    private var excessiveMotion = 0
+    private var startingTime: Date?
+    
     //MARK: Setup
 
     /// Initializes the LocationProvider with the ARView and a list of markers
@@ -188,6 +193,10 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             if markerFound != nil {
                 print("Found: \(markerFound!.id) at Location <\(markerFound!.location)>")
                 fixAROrigin(imageAnchor: imageAnchor, location: markerFound!.location)
+                // reset accuracy variables
+                self.insufficentFeatures = 0
+                self.excessiveMotion = 0
+                self.startingTime = Date()
             }
             else {
                 print("Nothing found")
@@ -278,7 +287,17 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             let transform = frame.camera.transform.columns.3
             let devicePosition = simd_float3(x: transform.x, y: transform.y, z: transform.z)
             let deviceOrientation = frame.camera.eulerAngles.y
-            let newPosition = LocalLocation(position: CGPoint(x: CGFloat(devicePosition.x), y: CGFloat(devicePosition.z)), positionAltitude: Float(devicePosition.y), heading: deviceOrientation, ts: Date(), approxPosition: 0, approxHeading: 0, floor: self.currentFloor!)
+            
+            // get Ar Camera noise level
+            switch frame.camera.trackingState {
+                case ARCamera.TrackingState.limited(.insufficientFeatures): self.insufficentFeatures+=1
+                case ARCamera.TrackingState.limited(.excessiveMotion): self.excessiveMotion+=1
+                default: ()
+            }
+            // calculates accuracy of Ar Position
+            let approxPosition = Float(self.insufficentFeatures + self.excessiveMotion + Int(self.startingTime?.timeIntervalSinceNow ?? 0) * -1)/100 //TODO: make better formula for calculates accuracy
+            
+            let newPosition = LocalLocation(position: CGPoint(x: CGFloat(devicePosition.x), y: CGFloat(devicePosition.z)), positionAltitude: Float(devicePosition.y), heading: deviceOrientation, ts: Date(), approxPosition: approxPosition, approxHeading: 0, floor: self.currentFloor!)
             notifyLocationUpdate(newLocation: newPosition)
         }
     }
