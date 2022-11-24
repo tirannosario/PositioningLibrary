@@ -28,6 +28,8 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     private var excessiveMotion = 0
     private var startingTime: Date?
     
+    private var approxFloor: Int = -1
+    
     //MARK: Setup
 
     /// Initializes the LocationProvider with the ARView and a list of markers
@@ -132,6 +134,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     private func findMarkByID(markerID: String) -> Marker? {
         for marker in markers {
             if marker.id == markerID {
+                resetFloorTimer() // reset to 0 the approxFloor and start a new timer
                 let floor = marker.location.floor
                 let building = floor.building!
                 // the user visit a new building or a different one
@@ -154,6 +157,17 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         return nil
     }
     
+    /// The first time (-1) starts a timer that increments approxFloor, the next time that is called it simple reset approxFloor
+    private func resetFloorTimer() {
+        if(self.approxFloor == -1) {
+            self.approxFloor = 0
+            Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { timer in
+                self.approxFloor += 1
+            }
+        }
+        else { self.approxFloor = 0 }
+    }
+    
     /// Removes all the previous anchors, except the last one (lastMarkerID), that is in the new floor
     private func removeAllAnchors(_ lastMarkerID: String) {
         let allAnchors = self.arView.session.currentFrame!.anchors
@@ -163,7 +177,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             }
         }
     }
-    
+        
     private func notifyBuildChanged(newBuilding: Building) {
         for locationObserver in self.locationObservers {
             locationObserver.onBuildingChanged(newBuilding)
@@ -297,7 +311,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             // calculates accuracy of Ar Position
             let approxPosition = Float(self.insufficentFeatures + self.excessiveMotion + Int(self.startingTime?.timeIntervalSinceNow ?? 0) * -1)/100 //TODO: make better formula for calculates accuracy
             
-            let newPosition = LocalLocation(position: CGPoint(x: CGFloat(devicePosition.x), y: CGFloat(devicePosition.z)), positionAltitude: Float(devicePosition.y), heading: deviceOrientation, ts: Date(), approxPosition: approxPosition, approxHeading: 0, floor: self.currentFloor!)
+            let newPosition = LocalLocation(position: CGPoint(x: CGFloat(devicePosition.x), y: CGFloat(devicePosition.z)), positionAltitude: Float(devicePosition.y), heading: deviceOrientation, ts: Date(), approxPosition: approxPosition, approxHeading: 0, floor: self.currentFloor!, approxFloor: self.approxFloor)
             notifyLocationUpdate(newLocation: newPosition)
         }
     }
