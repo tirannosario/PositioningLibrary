@@ -310,8 +310,9 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             }
             // calculates accuracy of Ar Position
             let approxPosition = Float(self.insufficentFeatures + self.excessiveMotion + Int(self.startingTime?.timeIntervalSinceNow ?? 0) * -1)/100 //TODO: make better formula for calculates accuracy
+            let approxHeading = Float(self.insufficentFeatures + self.excessiveMotion + Int(self.startingTime?.timeIntervalSinceNow ?? 0) * -1)/100 //TODO: make better formula for calculates accuracy
             
-            let newPosition = LocalLocation(position: CGPoint(x: CGFloat(devicePosition.x), y: CGFloat(devicePosition.z)), positionAltitude: Float(devicePosition.y), heading: deviceOrientation, ts: Date(), approxPosition: approxPosition, approxHeading: 0, floor: self.currentFloor!, approxFloor: self.approxFloor)
+            let newPosition = LocalLocation(position: CGPoint(x: CGFloat(devicePosition.x), y: CGFloat(devicePosition.z)), positionAltitude: Float(devicePosition.y), heading: deviceOrientation, ts: Date(), approxPosition: approxPosition, approxHeading: approxHeading, floor: self.currentFloor!, approxFloor: self.approxFloor)
             notifyLocationUpdate(newLocation: newPosition)
         }
     }
