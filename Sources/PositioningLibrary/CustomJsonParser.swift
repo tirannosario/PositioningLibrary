@@ -65,7 +65,9 @@ public class CustomJsonParser {
                             myMarkers.append(Marker(id: m["id"] as! String,
                                                     image: UIImage(named: m["image"] as! String)!,
                                                     physicalWidth: m["physicalWidth"] as! CGFloat,
-                                                    location: location))
+                                                    location: location,
+                                                    forMeasurement: m["forMeasurement"] != nil ? m["forMeasurement"] as! Bool : false
+                                                    ))
                             }
                             else { throw NotValid.noLocation(m["id"] as! String) }
                         }
