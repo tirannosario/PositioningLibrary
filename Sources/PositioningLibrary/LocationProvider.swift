@@ -127,21 +127,24 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     private func findMarkByID(markerID: String) -> Marker? {
         for marker in markers {
             if marker.id == markerID {
-                let floor = marker.location.floor
-                let building = floor.building
-                // the user visit a new building or a different one
-                if(self.currentBuilding == nil || self.currentBuilding?.id != building.id) {
-                    self.currentBuilding = building
-                    notifyBuildChanged(newBuilding: self.currentBuilding!)
-                    self.currentFloor = floor
-                    notifyFloorChanged(newFloor: self.currentFloor!)
-                    removeAllAnchors(markerID)
-                }
-                // the user visit a different floor of the same building
-                else if(self.currentFloor?.id != floor.id) {
-                    self.currentFloor = floor
-                    notifyFloorChanged(newFloor: self.currentFloor!)
-                    removeAllAnchors(markerID)
+                // se non è un Marker di "Misurazione"
+                if(!marker.forMeasurement) {
+                    let floor = marker.location.floor
+                    let building = floor.building
+                    // the user visit a new building or a different one
+                    if(self.currentBuilding == nil || self.currentBuilding?.id != building.id) {
+                        self.currentBuilding = building
+                        notifyBuildChanged(newBuilding: self.currentBuilding!)
+                        self.currentFloor = floor
+                        notifyFloorChanged(newFloor: self.currentFloor!)
+                        removeAllAnchors(markerID)
+                    }
+                    // the user visit a different floor of the same building
+                    else if(self.currentFloor?.id != floor.id) {
+                        self.currentFloor = floor
+                        notifyFloorChanged(newFloor: self.currentFloor!)
+                        removeAllAnchors(markerID)
+                    }
                 }
                 return marker
             }
@@ -187,7 +190,12 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             let markerFound = findMarkByID(markerID: imgId)
             if markerFound != nil {
                 print("Found: \(markerFound!.id) at Location <\(markerFound!.location)>")
-                fixAROrigin(imageAnchor: imageAnchor, location: markerFound!.location)
+                if(!markerFound!.forMeasurement) {
+                    fixAROrigin(imageAnchor: imageAnchor, location: markerFound!.location)
+                }
+                else {
+                    testMeasurement(marker: markerFound!)
+                }
             }
             else {
                 print("Nothing found")
@@ -281,5 +289,9 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             let newPosition = ApproxLocation(coordinates: CGPoint(x: CGFloat(devicePosition.x), y: CGFloat(devicePosition.z)), heading: deviceOrientation, floor: self.currentFloor!, approxRadius: 0, approxAngle: 0)
             notifyLocationUpdate(newLocation: newPosition)
         }
+    }
+    
+    private func testMeasurement(marker: Marker) {
+        print("I'm a Measurement Marker :)")
     }
 }
