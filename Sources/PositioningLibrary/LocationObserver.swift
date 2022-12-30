@@ -13,4 +13,5 @@ public protocol LocationObserver: AnyObject {
     func onBuildingChanged(_ newBuilding: Building)
     func onFloorChanged(_ newFloor: Floor)
     func onMeasurementMarkerFound(imageAnchor: ARImageAnchor, marker: Marker)
+    func onNewFrame(frame: ARFrame)
 }

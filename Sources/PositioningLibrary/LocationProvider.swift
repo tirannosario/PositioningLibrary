@@ -186,6 +186,12 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         }
     }
     
+    private func notifyNewFrame(frame: ARFrame) {
+        for locationObserver in self.locationObservers {
+            locationObserver.onNewFrame(frame: frame)
+        }
+    }
+    
     //MARK: AR Delegate Methods
     
     /// Method called when a Marker is recognized for the first time
@@ -228,6 +234,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     
     /// Method called at each frame, even when we don't frame any marker
     public func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        notifyNewFrame(frame: frame)
         calculateDevicePose(frame)
     }
 

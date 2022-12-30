@@ -315,6 +315,7 @@ class BuildingAnnotation: MKPointAnnotation { }
 //MARK: LocationObserver Methods
 
 extension FloorMapView: LocationObserver {
+    
     public func onLocationUpdate(_ newLocation: ApproxLocation) {
         if(self.floorMapExist) {
             moveUserAnnotation(x: Float(newLocation.coordinates.x), y: Float(newLocation.coordinates.y), heading: newLocation.heading, widthFloorInMeters: newLocation.floor.maxWidth, heightFloorInMeters: newLocation.floor.maxHeight)
@@ -329,6 +330,10 @@ extension FloorMapView: LocationObserver {
     }
     
     public func onMeasurementMarkerFound(imageAnchor: ARImageAnchor, marker: Marker) {
+        // nothing to do
+    }
+    
+    public func onNewFrame(frame: ARFrame) {
         // nothing to do
     }
 }
