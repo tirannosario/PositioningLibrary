@@ -7,6 +7,7 @@
 
 import UIKit
 import MapKit
+import ARKit
 
 public class FloorMapView: UIView {
     
@@ -325,6 +326,10 @@ extension FloorMapView: LocationObserver {
     
     public func onFloorChanged(_ newFloor: Floor) {
         changeFloorMap(newFloor: newFloor)
+    }
+    
+    public func onMeasurementMarkerFound(imageAnchor: ARImageAnchor, marker: Marker) {
+        // nothing to do
     }
 }
 

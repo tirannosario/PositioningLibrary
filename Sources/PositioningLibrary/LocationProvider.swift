@@ -180,6 +180,12 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         }
     }
     
+    private func notifyMeasurementMarkerFound(imageAnchor: ARImageAnchor, marker: Marker) {
+        for locationObserver in self.locationObservers {
+            locationObserver.onMeasurementMarkerFound(imageAnchor: imageAnchor, marker: marker)
+        }
+    }
+    
     //MARK: AR Delegate Methods
     
     /// Method called when a Marker is recognized for the first time
@@ -194,7 +200,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                     fixAROrigin(imageAnchor: imageAnchor, location: markerFound!.location)
                 }
                 else {
-                    testMeasurement(marker: markerFound!)
+                    notifyMeasurementMarkerFound(imageAnchor: imageAnchor, marker: markerFound!)
                 }
             }
             else {
@@ -289,9 +295,5 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             let newPosition = ApproxLocation(coordinates: CGPoint(x: CGFloat(devicePosition.x), y: CGFloat(devicePosition.z)), heading: deviceOrientation, floor: self.currentFloor!, approxRadius: 0, approxAngle: 0)
             notifyLocationUpdate(newLocation: newPosition)
         }
-    }
-    
-    private func testMeasurement(marker: Marker) {
-        print("I'm a Measurement Marker :)")
     }
 }
