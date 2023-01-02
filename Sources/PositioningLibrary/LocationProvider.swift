@@ -59,17 +59,20 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     /// Starts the position calculation
     /// - Parameter debug: Indicates whether or not to show the anchors of the Ar Session
     public func start(debug: Bool = false) {
-        // Set ARView delegate so we can define delegate methods in this controller
-        self.arView.session.delegate = self
-        self.arView.automaticallyConfigureSession = false
-        // Show statistics if desired
-        if(debug) { self.arView.debugOptions = [.showWorldOrigin, .showAnchorOrigins] }
-        // Disable any unneeded rendering options
-        self.arView.renderOptions = [.disableCameraGrain, .disableHDR, .disableMotionBlur, .disableDepthOfField, .disableFaceMesh, .disablePersonOcclusion, .disableGroundingShadows, .disableAREnvironmentLighting]
-        let configuration = ARWorldTrackingConfiguration()
-        configuration.maximumNumberOfTrackedImages = self.markers.count // TODO: upload only markers of the near building (using the user gps signal)
-        configuration.detectionImages = loadReferenceMarkers()
-        self.arView.session.run(configuration)
+        DispatchQueue.background(background: {
+            // do something in background
+            // Set ARView delegate so we can define delegate methods in this controller
+            self.arView.session.delegate = self
+            self.arView.automaticallyConfigureSession = false
+            // Show statistics if desired
+            if(debug) { self.arView.debugOptions = [.showWorldOrigin, .showAnchorOrigins] }
+            // Disable any unneeded rendering options
+            self.arView.renderOptions = [.disableCameraGrain, .disableHDR, .disableMotionBlur, .disableDepthOfField, .disableFaceMesh, .disablePersonOcclusion, .disableGroundingShadows, .disableAREnvironmentLighting]
+            let configuration = ARWorldTrackingConfiguration()
+            configuration.maximumNumberOfTrackedImages = self.markers.count // TODO: upload only markers of the near building (using the user gps signal)
+            configuration.detectionImages = self.loadReferenceMarkers()
+            self.arView.session.run(configuration)
+        })
     }
     
 //    /// Shows in the cgRect defined, the Map of the current floor (if the map exists)
@@ -314,6 +317,19 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             
             let newPosition = LocalLocation(position: CGPoint(x: CGFloat(devicePosition.x), y: CGFloat(devicePosition.z)), positionAltitude: Float(devicePosition.y), heading: deviceOrientation, ts: Date(), approxPosition: approxPosition, approxHeading: approxHeading, floor: self.currentFloor!, approxFloor: self.approxFloor)
             notifyLocationUpdate(newLocation: newPosition)
+        }
+    }
+}
+
+extension DispatchQueue {
+    static func background(delay: Double = 0.0, background: (()->Void)? = nil, completion: (() -> Void)? = nil) {
+        DispatchQueue.global(qos: .userInteractive).async {
+            background?()
+            if let completion = completion {
+                DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: {
+                    completion()
+                })
+            }
         }
     }
 }
