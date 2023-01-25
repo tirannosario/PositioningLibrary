@@ -206,7 +206,6 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             accessibility: "Alert: Marker framed"
         )
         Drops.show(drop)
-        Drops.didDismissDrop = {d in Drops.hideAll()}
     }
     
     //MARK: AR Delegate Methods
@@ -244,7 +243,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                     self.insufficentFeatures = 0
                     self.excessiveMotion = 0
                     self.startingTime = Date()
-                    showMarkerDrop(marker: markerFound!)
+//                    showMarkerDrop(marker: markerFound!)
                 } else {
 //                    print("The anchor for \(markerFound!.id) is not guaranteed to match the movement of its corresponding real-world feature, even if it remains in the visible scene.")
                 }
