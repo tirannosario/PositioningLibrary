@@ -12,6 +12,7 @@ import UIKit
 import RealityKit
 import SceneKit
 import WorldRepresentationLibrary
+import Drops
 
 public class LocationProvider: NSObject, ARSessionDelegate {
     private var markers: [Marker]
@@ -196,6 +197,17 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         }
     }
     
+    private func showMarkerDrop(marker: Marker) {
+        let drop = Drop(
+            title: "Marker Framed",
+            subtitle: marker.id,
+            icon: UIImage(systemName: "photo.artframe"),
+            duration: 3.0,
+            accessibility: "Alert: Marker framed"
+        )
+        Drops.show(drop)
+    }
+    
     //MARK: AR Delegate Methods
     
     /// Method called when a Marker is recognized for the first time
@@ -211,6 +223,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                 self.insufficentFeatures = 0
                 self.excessiveMotion = 0
                 self.startingTime = Date()
+                showMarkerDrop(marker: markerFound!)
             }
             else {
                 print("Nothing found")
@@ -230,6 +243,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                     self.insufficentFeatures = 0
                     self.excessiveMotion = 0
                     self.startingTime = Date()
+                    showMarkerDrop(marker: markerFound!)
                 } else {
 //                    print("The anchor for \(markerFound!.id) is not guaranteed to match the movement of its corresponding real-world feature, even if it remains in the visible scene.")
                 }
