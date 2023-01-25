@@ -205,8 +205,8 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             duration: 2.0,
             accessibility: "Alert: Marker framed"
         )
-        Drops.hideAll()
         Drops.show(drop)
+        Drops.didDismissDrop = {d in Drops.hideAll()}
     }
     
     //MARK: AR Delegate Methods
