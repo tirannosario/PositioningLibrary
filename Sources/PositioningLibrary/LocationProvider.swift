@@ -219,21 +219,26 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     }
     
     /// Method called when we continue to recognize a marker already seen
-//    public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
-//        guard let imageAnchor = anchors[0] as? ARImageAnchor else { return }
-//        if let imgId = imageAnchor.referenceImage.name {
-//            let markerFound = findMarkByID(markerID: imgId)
-//            if markerFound != nil {
-//                if imageAnchor.isTracked {
-//                } else {
+    public func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
+        guard let imageAnchor = anchors[0] as? ARImageAnchor else { return }
+        if let imgId = imageAnchor.referenceImage.name {
+            let markerFound = findMarkByID(markerID: imgId)
+            if markerFound != nil {
+                if imageAnchor.isTracked {
+                    print("Marker previously framed -> reset accuracy vars")
+                    // reset accuracy variables
+                    self.insufficentFeatures = 0
+                    self.excessiveMotion = 0
+                    self.startingTime = Date()
+                } else {
 //                    print("The anchor for \(markerFound!.id) is not guaranteed to match the movement of its corresponding real-world feature, even if it remains in the visible scene.")
-//                }
-//            }
-//            else {
-//                print("Nothing found")
-//            }
-//        }
-//    }
+                }
+            }
+            else {
+                print("Nothing found")
+            }
+        }
+    }
     
     /// Method called at each frame, even when we don't frame any marker
     public func session(_ session: ARSession, didUpdate frame: ARFrame) {
