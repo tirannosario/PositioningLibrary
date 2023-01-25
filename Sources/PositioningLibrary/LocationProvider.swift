@@ -202,9 +202,10 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             title: "Marker Framed",
             subtitle: marker.id,
             icon: UIImage(systemName: "photo.artframe"),
-            duration: 3.0,
+            duration: 2.0,
             accessibility: "Alert: Marker framed"
         )
+        Drops.hideAll()
         Drops.show(drop)
     }
     
