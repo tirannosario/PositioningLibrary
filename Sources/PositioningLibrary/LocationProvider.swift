@@ -238,7 +238,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             let markerFound = findMarkByID(markerID: imgId)
             if markerFound != nil {
                 if imageAnchor.isTracked {
-                    print("Marker previously framed -> reset accuracy vars")
+//                    print("Marker previously framed -> reset accuracy vars")
                     // reset accuracy variables
                     self.insufficentFeatures = 0
                     self.excessiveMotion = 0
