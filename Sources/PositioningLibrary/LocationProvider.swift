@@ -123,7 +123,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     private func loadReferenceMarkers() -> Set<ARReferenceImage> {
         var references: Set<ARReferenceImage> = []
         for marker in markers {
-            guard let image = marker.image.cgImage else { continue }
+            guard let image = marker.image!.cgImage else { continue }
             let reference = ARReferenceImage(image, orientation: .up, physicalWidth: marker.physicalWidth)
             reference.name = marker.id
             references.insert(reference)
