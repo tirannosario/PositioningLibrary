@@ -190,7 +190,7 @@ extension FloorMapView: MKMapViewDelegate {
             self.userAnnotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
 
             if userAnnotationView == nil {
-                userAnnotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+                userAnnotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
                 userAnnotationView!.canShowCallout = false
                 userAnnotationView!.image = (annotation as! UserPositionAnnotation).image
             } else {
