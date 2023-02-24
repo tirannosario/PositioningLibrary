@@ -163,7 +163,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     private func removeAllAnchors(_ lastMarkerID: String) {
         let allAnchors = self.arView.session.currentFrame!.anchors
         for anchor in allAnchors {
-            if(anchor.name != lastMarkerID) {
+            if(anchor.name == nil || anchor.name! != lastMarkerID) {
                 self.arView.session.remove(anchor: anchor)
             }
         }
