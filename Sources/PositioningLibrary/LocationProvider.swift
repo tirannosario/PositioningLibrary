@@ -217,6 +217,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                     if(self.lastTestMarker == nil || self.lastTestMarker!.id != markerFound!.id) {
                         self.lastTestMarker = markerFound
                         notifyMeasurementMarkerFound(imageAnchor: imageAnchor, marker: markerFound!)
+                        print("<REMOVE>: Rimuovo tutte la ancore dei Marker TEST")
                         removeAllAnchors(self.lastOriginMarker!.id) // rimuove tutte le ancore dei Marker tranne quello del fix di origine
                     }
                 }
