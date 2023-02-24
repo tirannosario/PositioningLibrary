@@ -22,6 +22,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     private var locationObservers: [LocationObserver] // list of Observers who will be notified of the change of position
     private var floorMapView: FloorMapView?
     private var originFixed = false // true if AR Origin==Floor Origin
+    private var lastOriginMarker: Marker?
     
     //MARK: Setup
 
@@ -129,6 +130,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
             if marker.id == markerID {
                 // se non è un Marker di "Misurazione"
                 if(!marker.forMeasurement) {
+                    self.lastOriginMarker = marker
                     let floor = marker.location.floor
                     let building = floor.building
                     // the user visit a new building or a different one
@@ -145,10 +147,11 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                         notifyFloorChanged(newFloor: self.currentFloor!)
                         removeAllAnchors(markerID)
                     }
+                    else {
+                        removeAllAnchors(markerID)
+                    }
                 }
-                else {
-                    removeAllAnchors(markerID)
-                }
+                
                 return marker
             }
         }
@@ -210,6 +213,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                 }
                 else {
                     notifyMeasurementMarkerFound(imageAnchor: imageAnchor, marker: markerFound!)
+                    removeAllAnchors(self.lastOriginMarker!.id)
                 }
             }
             else {
