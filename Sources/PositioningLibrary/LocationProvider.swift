@@ -161,7 +161,6 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     
     /// Removes all the previous anchors, except the last one (lastMarkerID), that is in the new floor
     private func removeAllAnchors(_ lastMarkerID: String) {
-        print("Rimuovi tutto tranne \(lastMarkerID)")
         let allAnchors = self.arView.session.currentFrame!.anchors
         for anchor in allAnchors {
             if(anchor.name == nil || anchor.name! != lastMarkerID) {
@@ -218,7 +217,6 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                     if(self.lastTestMarker == nil || self.lastTestMarker!.id != markerFound!.id) {
                         self.lastTestMarker = markerFound
                         notifyMeasurementMarkerFound(imageAnchor: imageAnchor, marker: markerFound!)
-                        print("<REMOVE>: Rimuovo tutte la ancore dei Marker TEST")
                         removeAllAnchors(self.lastOriginMarker!.id) // rimuove tutte le ancore dei Marker tranne quello del fix di origine
                     }
                 }
