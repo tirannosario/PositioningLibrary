@@ -161,6 +161,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     
     /// Removes all the previous anchors, except the last one (lastMarkerID), that is in the new floor
     private func removeAllAnchors(_ lastMarkerID: String) {
+        print("Rimuovi tutto tranne \(lastMarkerID)")
         let allAnchors = self.arView.session.currentFrame!.anchors
         for anchor in allAnchors {
             if(anchor.name == nil || anchor.name! != lastMarkerID) {
