@@ -23,6 +23,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     private var floorMapView: FloorMapView?
     private var originFixed = false // true if AR Origin==Floor Origin
     private var lastOriginMarker: Marker?
+    private var lastTestMarker: Marker?
     
     //MARK: Setup
 
@@ -212,8 +213,12 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                     fixAROrigin(imageAnchor: imageAnchor, location: markerFound!.location)
                 }
                 else {
-                    notifyMeasurementMarkerFound(imageAnchor: imageAnchor, marker: markerFound!)
-                    removeAllAnchors(self.lastOriginMarker!.id)
+                    // visto che ogni volta rimuoviamo l'ancora, con questo if ci evitiamo di ri-loggare lo stesso Marker di continuo
+                    if(self.lastTestMarker == nil || self.lastTestMarker!.id != markerFound!.id) {
+                        self.lastTestMarker = markerFound
+                        notifyMeasurementMarkerFound(imageAnchor: imageAnchor, marker: markerFound!)
+                        removeAllAnchors(self.lastOriginMarker!.id) // rimuove tutte le ancore dei Marker tranne quello del fix di origine
+                    }
                 }
             }
             else {
