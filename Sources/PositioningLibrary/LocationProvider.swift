@@ -68,7 +68,7 @@ public class LocationProvider: NSObject, ARSessionDelegate {
         // Disable any unneeded rendering options
         self.arView.renderOptions = [.disableCameraGrain, .disableHDR, .disableMotionBlur, .disableDepthOfField, .disableFaceMesh, .disablePersonOcclusion, .disableGroundingShadows, .disableAREnvironmentLighting]
         let configuration = ARWorldTrackingConfiguration()
-        configuration.maximumNumberOfTrackedImages = self.markers.count // TODO: upload only markers of the near building (using the user gps signal)
+        configuration.maximumNumberOfTrackedImages = 1
         configuration.detectionImages = loadReferenceMarkers()
         self.arView.session.run(configuration)
     }
@@ -150,6 +150,9 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                 else if(self.currentFloor?.id != floor.id) {
                     self.currentFloor = floor
                     notifyFloorChanged(newFloor: self.currentFloor!)
+                    removeAllAnchors(markerID)
+                }
+                else {
                     removeAllAnchors(markerID)
                 }
                 return marker
