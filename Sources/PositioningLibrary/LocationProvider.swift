@@ -29,6 +29,9 @@ public class LocationProvider: NSObject, ARSessionDelegate {
     private var excessiveMotion = 0
     private var startingTime: Date?
     
+    private var lastUserLocation: LocalLocation?
+    private var metersDone = 0.0 // metri percorsi dall'ultimo fix di posizione (dall'ultimo marker inquadrato)
+    
     private var approxFloor: Int = -1
     
     //MARK: Setup
@@ -223,6 +226,8 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                 print("Found: \(markerFound!.id) at Location <\(markerFound!.location)>")
                 fixAROrigin(imageAnchor: imageAnchor, location: markerFound!.location)
                 // reset accuracy variables
+                self.metersDone = 0.0
+                
                 self.insufficentFeatures = 0
                 self.excessiveMotion = 0
                 self.startingTime = Date()
@@ -243,6 +248,8 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                 if imageAnchor.isTracked {
 //                    print("Marker previously framed -> reset accuracy vars")
                     // reset accuracy variables
+                    self.metersDone = 0.0
+
                     self.insufficentFeatures = 0
                     self.excessiveMotion = 0
                     self.startingTime = Date()
@@ -330,12 +337,32 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                 case ARCamera.TrackingState.limited(.excessiveMotion): self.excessiveMotion+=1
                 default: ()
             }
-            // calculates accuracy of Ar Position
-            let approxPosition = (Float(self.insufficentFeatures + self.excessiveMotion) + Float(abs(self.startingTime?.timeIntervalSinceNow ?? 0)))/100
+            
+            // calculates accuracy of AR Position
+            if(self.lastUserLocation != nil) {
+                // aggiorniamo il numero di metri percorsi dall'ultimo fix di posizione, e lo usiamo per calcolare l'approx. della pos.
+                let distancePosition = CGPoint(x: CGFloat(devicePosition.x), y: CGFloat(devicePosition.z)).distance(to: self.lastUserLocation!.position)
+                self.metersDone += distancePosition
+            }
+            
+            print("Metri PercorsI: \(self.metersDone)")
+            
+            let approxPosition = self.metersDone / 50
+            
+            // calculates accuracy of AR Heading (old method)
             let approxHeading = (Float(self.insufficentFeatures + self.excessiveMotion) + Float(abs(self.startingTime?.timeIntervalSinceNow ?? 0)))/100
             
-            let newPosition = LocalLocation(position: CGPoint(x: CGFloat(devicePosition.x), y: CGFloat(devicePosition.z)), positionAltitude: Float(devicePosition.y), heading: deviceOrientation, ts: Date(), approxPosition: approxPosition, approxHeading: approxHeading, floor: self.currentFloor!, approxFloor: self.approxFloor)
+            let newPosition = LocalLocation(position: CGPoint(x: CGFloat(devicePosition.x), y: CGFloat(devicePosition.z)), positionAltitude: Float(devicePosition.y), heading: deviceOrientation, ts: Date(), approxPosition: Float(approxPosition), approxHeading: approxHeading, floor: self.currentFloor!, approxFloor: self.approxFloor)
+            
+            self.lastUserLocation = newPosition
+            
             notifyLocationUpdate(newLocation: newPosition)
         }
+    }
+}
+
+extension CGPoint {
+    func distance(to point: CGPoint) -> CGFloat {
+        return sqrt(pow((point.x - x), 2) + pow((point.y - y), 2))
     }
 }
