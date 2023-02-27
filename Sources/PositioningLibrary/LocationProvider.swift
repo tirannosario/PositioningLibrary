@@ -344,10 +344,8 @@ public class LocationProvider: NSObject, ARSessionDelegate {
                 let distancePosition = CGPoint(x: CGFloat(devicePosition.x), y: CGFloat(devicePosition.z)).distance(to: self.lastUserLocation!.position)
                 self.metersDone += distancePosition
             }
-            
-            print("Metri PercorsI: \(self.metersDone)")
-            
-            let approxPosition = self.metersDone / 50
+                        
+            let approxPosition = self.metersDone / 50 // 0,02 m per ogni metro (caso peggiore: per terra)
             
             // calculates accuracy of AR Heading (old method)
             let approxHeading = (Float(self.insufficentFeatures + self.excessiveMotion) + Float(abs(self.startingTime?.timeIntervalSinceNow ?? 0)))/100
